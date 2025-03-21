@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="cadastrologin.css">
+    <title>Cadastro</title>
+</head>
+<body>
+    <!-- Tela de fundo -->
+    <div class="login-container">
+        <!-- Layout branco -->
+        <div class="login-box">
+            <h1>Bem-vindo!</h1>
+            <h2>Faça cadastro</h2>
+            
+            <!-- Formulário de cadastro -->
+            <form action="#" method="POST">
+                <div class="input-container">
+                    <label for="email">Email institucional</label>
+                    <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+                </div>
+                <div class="input-container">
+                    <label for="username">Nome de usuário</label>
+                    <input type="text" id="username" name="username" placeholder="Escolha um nome de usuário" required>
+                </div>
+                <div class="input-container">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" placeholder="Escolha uma senha" required>
+                </div>
+                <button type="button" class="botao" onclick="redirecionarParaHomepage()">Cadastrar-se</button>
+                <form onsubmit="return false;">
+            </form>
+            
+            <!-- Opção de login -->
+            <p class="cadastro-link">Já tem uma conta? <a href="login.html">Faça login</a></p>
+
+        </div>
+    </div>
+    <script>
+        function redirecionarParaHomepage() {
+            alert("Cadastro realizado com sucesso!");
+            window.location.href = "homepage.html"; // Redireciona para a homepage
+        }
+        </script>        
+        
+</body>
+</html>
