@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="cadastrologin.css">
+    <link rel="icon" href="imagens/favicon.ico" type="image/x-icon">
+    <title>Cadastro</title>
+</head>
+<body>
+    <!-- Tela de fundo -->
+    <div class="login-container">
+        <!-- Título fixo acima da caixa -->
+        <h1>Bem-vindo!</h1>
+        
+        <!-- Layout branco -->
+        <div class="login-box">
+            <h2>Faça seu cadastro</h2>
+
+            <!-- Formulário de cadastro -->
+            <form action="cadastro.php" method="POST" id="cadastroForm" onsubmit="return validarSenhas()">
+                <div class="input-container">
+                    <label for="email">Email institucional</label>
+                    <input type="email" name="email" placeholder="Email institucional" required>
+                </div>
+
+                <div class="input-container">
+                    <label for="nome">Nome e Sobrenome</label>
+                    <input type="text" name="nome" placeholder="Nome e Sobrenome" required>
+                </div>
+
+                <div class="input-container">
+                    <label for="nome_usuario">Nome de usuário</label>
+                    <input type="text" name="nome_usuario" id="nome_usuario" placeholder="(O que aparecerá para os outros usuários)" required oninput="validarNomeUsuario()">
+                    <span id="erro_usuario" style="color: red; font-size: 0.8em; display: none;">Nomes de usuário podem ter apenas letras, números e "_"!</span>
+                </div>
+
+                <!-- Linha separadora -->
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0; width: 100%;">
+
+                <div class="input-container">
+                    <label for="senha">Senha</label>
+                    <input type="password" name="senha" id="senha" placeholder="Crie uma senha" required minlength="8">
+                </div>
+
+                <div class="input-container">
+                    <label for="confirmar_senha">Confirmar Senha</label>
+                    <input type="password" name="confirmar_senha" id="confirmar_senha" placeholder="Digite a senha novamente" required>
+                    <span id="erro_senha" style="color: red; font-size: 0.8em; display: none;">As senhas não coincidem!</span>
+                    <span id="erro_tamanho" style="color: red; font-size: 0.8em; display: none;">A senha deve ter no mínimo 8 caracteres!</span>
+                </div>
+
+                <button type="submit" class="botao">Cadastrar</button>
+            </form>
+
+            <p class="cadastro-link">Já tem uma conta? <a href="login.html">Faça login</a></p>
+        </div>
+    </div>
+
+    <script>
+        function validarSenhas() {
+            const senha = document.getElementById('senha').value;
+            const confirmarSenha = document.getElementById('confirmar_senha').value;
+            const erroSenha = document.getElementById('erro_senha');
+            const erroTamanho = document.getElementById('erro_tamanho');
+
+            let valido = true;
+
+            // Verifica se a senha tem no mínimo 8 caracteres
+            if (senha.length < 8) {
+                erroTamanho.style.display = 'block';
+                valido = false;
+            } else {
+                erroTamanho.style.display = 'none';
+            }
+
+            // Verifica se as senhas coincidem
+            if (senha !== confirmarSenha) {
+                erroSenha.style.display = 'block';
+                valido = false;
+            } else {
+                erroSenha.style.display = 'none';
+            }
+
+            return valido;
+        }
+
+        function validarNomeUsuario() {
+            const nomeUsuario = document.getElementById('nome_usuario').value;
+            const erroUsuario = document.getElementById('erro_usuario');
+            const regex = /^[a-zA-Z0-9_]+$/; // Apenas letras, números e underscore
+
+            if (nomeUsuario === "") {
+                erroUsuario.style.display = 'none';
+            } else if (!regex.test(nomeUsuario)) {
+                erroUsuario.style.display = 'block';
+            } else {
+                erroUsuario.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

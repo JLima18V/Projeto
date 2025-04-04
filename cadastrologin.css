@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ecf8e5;
+}
+
+/* Tela de login e cadastro */
+.login-container {
+    display: flex;
+    flex-direction: column; /* Para empilhar os elementos verticalmente */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Título "Bem-vindo!" fixo acima da caixa */
+h1 {
+    font-size: 28px;
+    color: #4CAF50;
+    margin-bottom: 20px; /* Dá espaço entre o título e a caixa branca */
+}
+
+/* Layout branco com borda arredondada */
+.login-box {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Mantém os elementos bem distribuídos */
+}
+
+/* Frase "Faça seu cadastro" agora mais próxima do topo */
+h2 {
+    font-size: 18px;
+    color: hsl(139, 52%, 60%);
+    margin-top: 0px; /* Reduzi o espaço superior */
+    margin-bottom: 20px;
+}
+
+/* Estilo para os campos de entrada */
+.input-container {
+    margin-bottom: 15px; /* Espaçamento entre os campos */
+    text-align: left;
+    position: relative;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+/* Estilo para os rótulos dos inputs */
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Mensagens de erro */
+#erro_usuario, #erro_senha {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 5px; /* Dá espaço entre a mensagem e o input */
+    display: none;
+}
+
+/* Quando a mensagem de erro for exibida */
+.visible {
+    display: block !important;
+}
+
+/* Botão de cadastro */
+.botao {
+    background-color: hsl(139, 52%, 77%);
+    color: white;
+    padding: 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.botao:hover {
+    background-color: hsl(139, 52%, 60%);
+}
+
+/* Estilo para o link "Faça login" */
+.cadastro-link a {
+    color: hsl(139, 52%, 60%);
+    text-decoration: none;
+}
