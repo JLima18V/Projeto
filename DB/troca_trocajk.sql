@@ -56,8 +56,29 @@ ALTER TABLE `usuarios`
 --
 ALTER TABLE `usuarios`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- Estrutura para tabela `livros`
+--
+
+CREATE TABLE `livros` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `titulo` VARCHAR(255),
+  `autor` VARCHAR(255),
+  `genero` VARCHAR(100),
+  `estado` VARCHAR(50),
+  `imagem` BLOB,
+  `usuario_id` INT,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`usuario_id`) REFERENCES `usuario`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+

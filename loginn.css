@@ -1,0 +1,117 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ecf8e5;
+}
+
+/* Tela de login */
+.login-container {
+    display: flex;
+    flex-direction: column; /* Para empilhar os elementos verticalmente */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Título "Bem-vindo!" agora fora da caixa */
+h1 {
+    font-size: 28px;
+    color: #4CAF50; /* Cor verde */
+    margin-bottom: 20px; /* Dá espaço entre o título e a caixa */
+}
+
+/* Layout branco com borda arredondada */
+.login-box {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Estilo para os campos de entrada */
+.input-container {
+    margin-bottom: 15px; /* Espaçamento entre os campos */
+    text-align: left;
+    position: relative;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+/* Estilo para os rótulos dos inputs */
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Mensagens de erro */
+#erro_usuario, #erro_senha {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 5px;
+    display: none;
+}
+
+/* Quando a mensagem de erro for exibida */
+.visible {
+    display: block !important;
+}
+
+/* Botão de login */
+.botao {
+    background-color: hsl(139, 52%, 77%);
+    color: white;
+    padding: 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    width: 100%; /* Garante que o botão ocupe toda a largura */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Alterar cor de fundo do botão ao passar o mouse */
+.botao:hover {
+    background-color: hsl(139, 52%, 60%);
+}
+
+/* Link "Faça login" com a cor verde e mais próximo do botão */
+.cadastro-link a {
+    color: hsl(139, 52%, 60%); /* Cor verde */
+    text-decoration: none;
+    font-size: 14px;
+    margin-top: 10px; /* Coloca o link mais próximo do botão */
+}
+
+/* Botão de cadastro com o mesmo tamanho que o botão de login */
+.botao-cadastro {
+    background-color: hsl(139, 52%, 77%);
+    color: white;
+    padding: 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    width: 100%; /* Garante a mesma largura que o botão de login */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Alterar cor de fundo do botão de cadastro ao passar o mouse */
+.botao-cadastro:hover {
+    background-color: hsl(139, 52%, 60%);
+}
