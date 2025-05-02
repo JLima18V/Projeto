@@ -30,7 +30,7 @@
     <div class="perfil-container">
         <!-- Área do Perfil -->
         <div class="perfil-info">
-            <img src="imagens/icone-perfil.png" alt="Perfil" class="perfil-icon">
+            <img src="imagens/icone-perfil.svg" alt="Perfil" class="perfil-icon">
             <div class="perfil-details">
 
             <?php
