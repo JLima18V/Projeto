@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['id'] = $row['id'];
             $_SESSION['usuario'] = $row['nome_usuario'];
             
-            header("Location: homepage.html"); // Redireciona para a homepage
+            header("Location: homepage.php"); // Redireciona para a homepage
             exit();
         } else {
             echo "Senha incorreta!";
