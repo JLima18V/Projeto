@@ -1,5 +1,7 @@
 <?php
-// Conexão com o banco
+session_start(); // Adicionado para usar a sessão
+
+// Conexão com o banco de dados
 $servername = "localhost";
 $username = "root";
 $password = "jk123456";
@@ -14,10 +16,12 @@ if ($conn->connect_error) {
 
 // Verifica se o formulário foi enviado
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Pega os dados do formulário
     $titulo = $conn->real_escape_string($_POST['titulo']);
     $autor = $conn->real_escape_string($_POST['autor']);
     $genero = $conn->real_escape_string($_POST['genero']);
     $estado = $conn->real_escape_string($_POST['estado']);
+    $id_usuario = $_SESSION['id']; // Pega o ID do usuário logado
 
     // Processamento de múltiplas imagens
     $imagensSalvas = [];
@@ -39,17 +43,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 
-    // Concatena os nomes das imagens
     $imagensString = implode(",", $imagensSalvas);
 
-    // Insere no banco
-    $sql = "INSERT INTO livros (titulo, autor, genero, estado, imagens) VALUES ('$titulo', '$autor', '$genero', '$estado', '$imagensString')";
+    // Agora insere com o ID do usuário
+    $sql = "INSERT INTO livros (titulo, autor, genero, estado, imagens, id_usuario) 
+            VALUES ('$titulo', '$autor', '$genero', '$estado', '$imagensString', '$id_usuario')";
 
     if ($conn->query($sql) === TRUE) {
-        header("Location: homepage.html");
+        header("Location: homepage.php");
         exit();
     } else {
-        echo "Erro ao inserir: " . $conn->error;
+        echo "Erro ao inserir no banco de dados: " . $conn->error;
     }
 } else {
     echo "Requisição inválida.";
