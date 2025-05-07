@@ -4,7 +4,7 @@ session_start(); // Adicionado para usar a sessão
 // Conexão com o banco de dados
 $servername = "localhost";
 $username = "root";
-$password = "jk123456";
+$password = "";
 $database = "troca_trocaJK";
 
 $conn = new mysqli($servername, $username, $password, $database);
@@ -14,6 +14,12 @@ if ($conn->connect_error) {
     die("Falha na conexão: " . $conn->connect_error);
 }
 
+// Verifica se o usuário está logado
+if (!isset($_SESSION['id'])) {
+    die("Erro: Usuário não está logado.");
+}
+$id_usuario = $_SESSION['id'];
+
 // Verifica se o formulário foi enviado
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Pega os dados do formulário
@@ -21,7 +27,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $autor = $conn->real_escape_string($_POST['autor']);
     $genero = $conn->real_escape_string($_POST['genero']);
     $estado = $conn->real_escape_string($_POST['estado']);
-    $id_usuario = $_SESSION['id']; // Pega o ID do usuário logado
+
+    // Verifica se o ID do usuário é válido
+    $sqlCheckUser = "SELECT id FROM usuarios WHERE id = '$id_usuario'";
+    $result = $conn->query($sqlCheckUser);
+
+    if ($result->num_rows === 0) {
+        die("Erro: Usuário inválido.");
+    }
 
     // Processamento de múltiplas imagens
     $imagensSalvas = [];

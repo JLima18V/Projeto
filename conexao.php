@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";  // Servidor do banco de dados (normalmente "localhost")
 $username = "root";         // Usuário do MySQL
-$password = "jk123456";             // Senha do MySQL (pode ser vazia no XAMPP)
+$password = "";             // Senha do MySQL (pode ser vazia no XAMPP)
 $database = "troca_trocaJK"; // Nome do banco de dados
 
 // Criar conexão

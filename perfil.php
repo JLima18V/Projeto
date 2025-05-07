@@ -11,6 +11,18 @@ $result = $stmt->get_result();
 $usuario = $result->fetch_assoc();
 $stmt->close();
 
+// Verifica se os dados do usuário foram encontrados
+if ($usuario) {
+    // Define os valores na sessão
+    $_SESSION['nome_sobrenome'] = $usuario['nome_sobrenome'];
+    $_SESSION['nome_usuario'] = $usuario['nome_usuario'];
+    $_SESSION['foto_perfil'] = $usuario['foto_perfil'];
+} else {
+    // Caso o usuário não seja encontrado, redirecione ou exiba uma mensagem
+    echo "Usuário não encontrado.";
+    exit;
+}
+
 // Recupera os livros publicados pelo usuário
 $sql_livros = "SELECT id, titulo, autor, data_publicacao, imagens FROM livros WHERE id_usuario = ? ORDER BY data_publicacao DESC";
 
@@ -86,8 +98,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES['foto_perfil'])) {
             <!-- Exibe a foto de perfil -->
             <img src="<?= $usuario['foto_perfil'] ? 'imagens/perfis/' . $usuario['foto_perfil'] : 'imagens/icone-perfil.svg' ?>" alt="Perfil" class="perfil-icon">
             <div class="perfil-details">
-                <h2><?= $_SESSION['nome_sobrenome'] ?></h2>
-                <p>@<?= $_SESSION['nome_usuario'] ?></p>
+                <h2><?= isset($_SESSION['nome_sobrenome']) ? htmlspecialchars($_SESSION['nome_sobrenome']) : 'Nome não definido' ?></h2>
+                <p>@<?= isset($_SESSION['nome_usuario']) ? htmlspecialchars($_SESSION['nome_usuario']) : 'Usuário não definido' ?></p>
                 <a href="editar_perfil.php">
                     <button>Editar Perfil</button>
                 </a>
