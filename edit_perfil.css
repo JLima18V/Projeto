@@ -12,10 +12,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 15px 30px; /* Mesmo padding do homepage */
+    padding: 10px 20px; /* Ajuste para o mesmo padding da homepage */
     position: fixed;
     width: 100%;
-    height: 70px; /* Mesmo tamanho do homepage */
+    height: 80px; /* Ajuste para o mesmo tamanho da homepage */
     top: 0;
     left: 0;
     z-index: 1000;
@@ -23,13 +23,13 @@ body {
 }
 
 .header .logo {
-    width: 160px; /* Mesmo tamanho do logo no homepage */
+    width: 150px; /* Ajuste para o mesmo tamanho do logo na homepage */
 }
 
 .search-container {
     position: relative;
     width: 50%;
-    max-width: 500px; /* Ajuste do tamanho máximo */
+    max-width: 600px; /* Ajuste para o mesmo tamanho máximo da homepage */
 }
 
 .search-bar {
