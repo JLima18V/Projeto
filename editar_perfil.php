@@ -35,7 +35,7 @@
         $id = $_SESSION['id'];
 
         // Busca os dados do usuário
-        $sql = "SELECT nome_sobrenome, nome_usuario FROM usuarios WHERE id = ?";
+        $sql = "SELECT nome_usuario FROM usuarios WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -47,8 +47,7 @@
         <form action="atualizar_perfil.php" method="POST" class="editar-perfil-form">
             <input type="hidden" name="id" value="<?php echo $id; ?>">
 
-            <label for="nome_sobrenome">Nome e Sobrenome:</label>
-            <input type="text" id="nome_sobrenome" name="nome_sobrenome" value="<?php echo $usuario['nome_sobrenome']; ?>" required>
+           
 
             <label for="nome_usuario">Nome de Usuário:</label>
             <input type="text" id="nome_usuario" name="nome_usuario" value="<?php echo $usuario['nome_usuario']; ?>" required>
