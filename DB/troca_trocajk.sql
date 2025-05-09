@@ -12,9 +12,6 @@ CREATE TABLE usuarios (
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
-
 CREATE TABLE livros (
    id INT NOT NULL AUTO_INCREMENT,
   titulo VARCHAR(255),
@@ -28,4 +25,11 @@ CREATE TABLE livros (
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
   );
 
+ALTER TABLE livros
+DROP FOREIGN KEY livros_ibfk_1;
+
+ALTER TABLE livros
+ADD CONSTRAINT livros_ibfk_1
+FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+ON DELETE CASCADE;
 
