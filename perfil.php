@@ -101,10 +101,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES['foto_perfil'])) {
                 <h2><?= isset($_SESSION['nome_sobrenome']) ? htmlspecialchars($_SESSION['nome_sobrenome']) : 'Nome não definido' ?></h2>
                 <p>@<?= isset($_SESSION['nome_usuario']) ? htmlspecialchars($_SESSION['nome_usuario']) : 'Usuário não definido' ?></p>
                 <a href="editar_perfil.php">
-                    <button>Editar Perfil</button>
+                    <button class="botao-estilizado editar">Editar Perfil</button>
                 </a>
                 <a href="confirmar_exclusao.html">
-                    <button>Deletar Perfil</button>
+                    <button class="botao-estilizado deletar">Deletar Perfil</button>
                 </a>
             </div>
         </div>

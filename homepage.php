@@ -2,20 +2,8 @@
 session_start(); // Inicia a sessão para usar dados do usuário logado
 include 'conexao.php';
 
-// Primeiro, verifique a estrutura da sua tabela usuarios
-$tabela_usuarios = $conn->query("DESCRIBE usuarios");
-$colunas_usuarios = [];
-while($coluna = $tabela_usuarios->fetch_assoc()) {
-    $colunas_usuarios[] = $coluna['Field'];
-}
-
-// Determina qual campo usar para o nome de usuário
-$campo_nome = in_array('nome', $colunas_usuarios) ? 'nome' : 
-             (in_array('username', $colunas_usuarios) ? 'username' : 
-             (in_array('user', $colunas_usuarios) ? 'user' : 'id'));
-
 // Buscando livros com dados do usuário usando o campo correto
-$query = "SELECT l.*, u.$campo_nome as nome_usuario FROM livros l 
+$query = "SELECT l.*, u.nome_usuario as nome_usuario FROM livros l 
           LEFT JOIN usuarios u ON l.id_usuario = u.id 
           ORDER BY l.id DESC";
 
@@ -146,25 +134,25 @@ $result = $conn->query($query);
         <?php
         // Exibe os livros
         if ($result && $result->num_rows > 0) {
-            while($livro = $result->fetch_assoc()) {
+            while ($livro = $result->fetch_assoc()) {
                 // Se tiver username, use ele, senão use um padrão
-                $usuario = !empty($livro['nome_usuario']) ? "@" . $livro['nome_usuario'] : "@usuarioTeste";
-                
+                $usuario = !empty($livro['nome_usuario']) ? "@" . htmlspecialchars($livro['nome_usuario']) : "@usuarioTeste";
+
                 // Obtém a primeira imagem se houver múltiplas separadas por vírgula
                 $imagens = explode(",", $livro['imagens']);
                 $primeiraImagem = $imagens[0];
-                
-                echo '<div class="card-livro" data-id="'.htmlspecialchars($livro['id']).'">';
+
+                echo '<div class="card-livro" data-id="' . htmlspecialchars($livro['id']) . '" data-usuario="' . htmlspecialchars($usuario) . '">';
                 echo '<div class="header-usuario">';
                 echo '<img src="imagens/icone-perfil.svg" class="perfil-icon" alt="Perfil">';
-                echo '<span class="user">'.$usuario.'</span>';
+                echo '<span class="user">' . $usuario . '</span>';
                 echo '</div>';
-                echo '<img src="uploads/'.htmlspecialchars($primeiraImagem).'" class="imagem-livro" alt="Capa do Livro">';
+                echo '<img src="uploads/' . htmlspecialchars($primeiraImagem) . '" class="imagem-livro" alt="Capa do Livro">';
                 echo '<div class="info-livro">';
-                echo '<p class="titulo"><strong>Título:</strong> '.htmlspecialchars($livro['titulo']).'</p>';
-                echo '<p class="genero"><strong>Gênero:</strong> '.htmlspecialchars($livro['genero']).'</p>';
-                echo '<p class="autor"><strong>Autor:</strong> '.htmlspecialchars($livro['autor']).'</p>';
-                echo '<p class="estado"><strong>Estado:</strong> '.htmlspecialchars($livro['estado']).'</p>';
+                echo '<p class="titulo"><strong>Título:</strong> ' . htmlspecialchars($livro['titulo']) . '</p>';
+                echo '<p class="genero"><strong>Gênero:</strong> ' . htmlspecialchars($livro['genero']) . '</p>';
+                echo '<p class="autor"><strong>Autor:</strong> ' . htmlspecialchars($livro['autor']) . '</p>';
+                echo '<p class="estado"><strong>Estado:</strong> ' . htmlspecialchars($livro['estado']) . '</p>';
                 echo '</div>';
                 echo '</div>';
             }
@@ -285,7 +273,7 @@ $result = $conn->query($query);
 
         // Adicionar evento de clique aos cards de livro existentes
         document.querySelectorAll('.card-livro').forEach(card => {
-            card.addEventListener('click', function() {
+            card.addEventListener('click', function () {
                 mostrarDetalhesLivro(this);
             });
         });
@@ -296,7 +284,7 @@ $result = $conn->query($query);
             const modalContent = document.getElementById("modalDetalhesLivro");
 
             // Extrai dados do card
-            const usuario = cardElement.querySelector(".user").innerText;
+            const usuario = cardElement.getAttribute("data-usuario");
             const imagemSrc = cardElement.querySelector(".imagem-livro").src;
             const tituloText = cardElement.querySelector(".titulo").innerText;
             const generoText = cardElement.querySelector(".genero").innerText;
