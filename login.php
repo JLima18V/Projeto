@@ -41,10 +41,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: homepage.php"); // Redireciona para a homepage
             exit();
         } else {
-            echo "Senha incorreta!";
+            echo "<strong>Senha incorreta!</strong>";
         }
     } else {
-        echo "Usuário não encontrado!";
+        echo "<strong>Usuário não encontrado!</strong>";
     }
 
     $stmt->close();
