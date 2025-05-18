@@ -1,0 +1,136 @@
+/* Estilo geral */
+body {
+    background-color: #f5f5f5; /* Fundo claro */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Cabeçalho */
+.header {
+    background-color: #ecf7e6; /* Verde claro */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px; /* Ajuste para o mesmo padding da homepage */
+    position: fixed;
+    width: 100%;
+    height: 80px; /* Ajuste para o mesmo tamanho da homepage */
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
+}
+
+.header .logo {
+    width: 150px; /* Ajuste para o mesmo tamanho do logo na homepage */
+}
+
+.search-container {
+    position: relative;
+    width: 50%;
+    max-width: 600px; /* Ajuste para o mesmo tamanho máximo da homepage */
+}
+
+.search-bar {
+    width: 100%;
+    padding: 10px 40px 10px 15px; /* Mesmo padding interno */
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    font-size: 16px; /* Mesmo tamanho de fonte */
+}
+
+.filter-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px; /* Mesmo tamanho do ícone */
+    cursor: pointer;
+}
+
+.icons {
+    display: flex;
+    gap: 15px; /* Mesmo espaçamento entre ícones */
+}
+
+.icons img {
+    width: 30px; /* Mesmo tamanho dos ícones */
+    cursor: pointer;
+}
+
+/* Container principal */
+.editar-perfil-container {
+    margin: 120px auto 20px; /* Aumenta o espaço abaixo da barra superior */
+    padding: 20px;
+    max-width: 500px; /* Reduz a largura máxima */
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Centraliza o texto */
+}
+
+.editar-perfil-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Formulário */
+.editar-perfil-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.editar-perfil-form label {
+    font-size: 14px;
+    color: #555;
+    text-align: left; /* Alinha os rótulos à esquerda */
+}
+
+.editar-perfil-form input {
+    width: 100%;
+    padding: 10px 15px; /* Add padding inside the input fields */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    box-sizing: border-box; /* Ensure padding doesn't affect the width */
+}
+
+/* Botões */
+.botoes-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.botao-estilizado {
+    display: inline-block;
+    background-color: #5dbb63; /* Verde */
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    border: none;
+    flex: 1;
+    text-align: center;
+}
+
+.botao-estilizado:hover {
+    background-color: #4aa653; /* Verde mais escuro */
+    transform: scale(1.05);
+}
+
+.botao-estilizado.cancelar {
+    background-color: #e74c3c; /* Vermelho */
+}
+
+.botao-estilizado.cancelar:hover {
+    background-color: #c0392b; /* Vermelho mais escuro */
+}

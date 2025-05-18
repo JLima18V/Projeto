@@ -63,6 +63,22 @@ body {
     color: #777;
 }
 
+.perfil-info .perfil-details a.editar {
+    background-color: #5dbb63; /* Verde para o botão de editar */
+}
+
+.perfil-info .perfil-details a.editar:hover {
+    background-color: #4aa653; /* Cor mais escura ao passar o mouse */
+}
+
+.perfil-info .perfil-details a.deletar {
+    background-color: #e74c3c; /* Vermelho para o botão de deletar */
+}
+
+.perfil-info .perfil-details a.deletar:hover {
+    background-color: #c0392b; /* Cor mais escura ao passar o mouse */
+}
+
 /* Livros publicados */
 .livros-publicados {
     flex-grow: 1; /* Garante que os livros ocupem o restante da largura */
@@ -91,4 +107,34 @@ body {
 .livro p {
     font-size: 18px;
     color: #333;
+}
+
+/* Botões estilizados */
+.botao-estilizado {
+    display: inline-block;
+    background-color: #5dbb63; /* Verde para o botão */
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%; /* Faz o botão ocupar toda a largura do container */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.botao-estilizado:hover {
+    background-color: #4aa653; /* Cor mais escura ao passar o mouse */
+    transform: scale(1.05); /* Leve aumento no tamanho */
+}
+
+.botao-estilizado.deletar {
+    background-color: #e74c3c; /* Vermelho para o botão de deletar */
+}
+
+.botao-estilizado.deletar:hover {
+    background-color: #c0392b; /* Cor mais escura ao passar o mouse */
 }
