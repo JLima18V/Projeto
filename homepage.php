@@ -124,7 +124,7 @@ $result = $conn->query($query);
         <div class="icons">
             <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()">
             <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.html'">
-            <img src="imagens/icone-mensagem.svg" alt="Chat">
+            <img src="imagens/icone-notificacao.svg" alt="Notificações">
             <img src="imagens/icone-perfil.svg" alt="Perfil" onclick="window.location.href='perfil.php'">
         </div>
     </header>
