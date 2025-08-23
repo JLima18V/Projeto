@@ -1,15 +1,42 @@
 <?php
-session_start(); // Inicia a sessão para usar dados do usuário logado
+session_start();
 include 'conexao.php';
 
-// Buscando livros com dados do usuário usando o campo correto
-$query = "SELECT l.*, u.nome_usuario as nome_usuario FROM livros l 
-          LEFT JOIN usuarios u ON l.id_usuario = u.id 
-          ORDER BY l.id DESC";
+// Modifiquei a query para incluir a foto_perfil e id_usuario
+$termoPesquisa = isset($_POST['q']) ? trim($_POST['q']) : '';
 
-$result = $conn->query($query);
+if (!empty($termoPesquisa)) {
+    // Pesquisa filtrada
+    $sql = "SELECT l.*, u.nome_usuario, u.foto_perfil, u.id as id_dono 
+            FROM livros l 
+            LEFT JOIN usuarios u ON l.id_usuario = u.id 
+           WHERE l.titulo LIKE ? OR l.autor LIKE ? OR l.genero LIKE ?
+            ORDER BY l.id DESC";
+    $stmt = $conn->prepare($sql);
+    $likeTerm = "%{$termoPesquisa}%";
+$stmt->bind_param("sss", $likeTerm, $likeTerm, $likeTerm);
 
-// Resto do seu código permanece o mesmo
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    // Mostra todos os livros
+    $sql = "SELECT l.*, u.nome_usuario, u.foto_perfil, u.id as id_dono 
+            FROM livros l 
+            LEFT JOIN usuarios u ON l.id_usuario = u.id 
+            ORDER BY l.id DESC";
+    $result = $conn->query($sql);
+}
+
+
+// Obtém a foto de perfil do usuário logado
+$sql_user = "SELECT foto_perfil FROM usuarios WHERE id = ?";
+$stmt_user = $conn->prepare($sql_user);
+$stmt_user->bind_param("i", $_SESSION['id']);
+$stmt_user->execute();
+$result_user = $stmt_user->get_result();
+$user_data = $result_user->fetch_assoc();
+$foto_perfil_logado = $user_data['foto_perfil'] ?? null;
+$stmt_user->close();
 ?>
 
 <!DOCTYPE html>
@@ -109,59 +136,148 @@ $result = $conn->query($query);
             transform: scale(1.05);
             border-color: red;
         }
+
+        .header-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.perfil-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user {
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
+}
+
+.user:hover {
+    text-decoration: underline;
+}
+
+.modal-content {
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-perfil {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.modal-img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.modal-info {
+    line-height: 1.6;
+}
+
+.fechar {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
     </style>
 </head>
 <body>
-    <!-- Cabeçalho -->
     <header class="header">
-        <a href="homepage.php">
+        <a href="homepage.php
+        ">
             <img src="imagens/logo-trocatrocajk.png" alt="Logo" class="logo">
         </a>
         <div class="search-container">
-            <input type="text" class="search-bar" placeholder="Pesquise livros">
-            <img src="imagens/icone-filtro.svg" alt="Filtrar" class="filter-icon">
-        </div>
+    <form method="POST" action="homepage.php" style="display: flex; align-items: center;">
+        <input type="text" name="q" class="search-bar" placeholder="Pesquise livros">
+        <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
+            <img src="imagens/icone-filtro.svg" alt="Pesquisar" class="filter-icon">
+        </button>
+    </form>
+</div>
+
         <div class="icons">
             <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()">
-            <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.html'">
-            <img src="imagens/icone-notificacao.svg" alt="Notificações">
-            <img src="imagens/icone-perfil.svg" alt="Perfil" onclick="window.location.href='perfil.php'">
+            <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.php'">
+            <img src="imagens/icone-mensagem.svg" alt="Chat">
+            <div class="foto-perfil-container" onclick="window.location.href='perfil.php'">
+                <img src="<?= $foto_perfil_logado ? 'imagens/perfis/' . htmlspecialchars($foto_perfil_logado) : 'imagens/icone-perfil.svg' ?>" 
+                     alt="Perfil" 
+                     class="perfil-icon" 
+                     style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+            </div>
         </div>
     </header>
 
     <main id="livrosContainer" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; margin-top: 90px;">
-        <!-- Aqui serão exibidos os livros do banco de dados -->
-        <?php
-        // Exibe os livros
-        if ($result && $result->num_rows > 0) {
-            while ($livro = $result->fetch_assoc()) {
-                // Se tiver username, use ele, senão use um padrão
-                $usuario = !empty($livro['nome_usuario']) ? "@" . htmlspecialchars($livro['nome_usuario']) : "@usuarioTeste";
+    <?php
+    if ($result && $result->num_rows > 0) {
+        while ($livro = $result->fetch_assoc()) {
+            $usuario = !empty($livro['nome_usuario']) ? "@" . htmlspecialchars($livro['nome_usuario']) : "@usuarioTeste";
+            
+            // Obtém a foto de perfil ou usa o ícone padrão
+            $foto_perfil = !empty($livro['foto_perfil']) ? 
+                'imagens/perfis/' . htmlspecialchars($livro['foto_perfil']) : 
+                'imagens/icone-perfil.svg';
+            
+            // Obtém a primeira imagem do livro
+            $imagens = explode(",", $livro['imagens']);
+            $primeiraImagem = $imagens[0];
+            
+            echo '<div class="card-livro" data-id="' . htmlspecialchars($livro['id']) . '" data-usuario="' . htmlspecialchars($usuario) . '">';
+            echo '<div class="header-usuario">';
+            echo '<img src="' . $foto_perfil . '" class="perfil-icon" alt="Perfil" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">';
+            
+            $link_perfil = ($livro['id_usuario'] == $_SESSION['id']) ? 'perfil.php' : 'perfil_usuario.php?id=' . $livro['id_usuario'];
+            echo '<a class="user" href="' . $link_perfil . '">' . $usuario . '</a>';
+            
+            echo '</div>';
+            echo '<img src="uploads/' . htmlspecialchars($primeiraImagem) . '" class="imagem-livro" alt="Capa do Livro">';
+            echo '<div class="info-livro">';
+            echo '<p class="titulo"><strong>Título:</strong> ' . htmlspecialchars($livro['titulo']) . '</p>';
+            echo '<p class="genero"><strong>Gênero:</strong> ' . htmlspecialchars($livro['genero']) . '</p>';
+            echo '<p class="autor"><strong>Autor:</strong> ' . htmlspecialchars($livro['autor']) . '</p>';
+            echo '<p class="estado"><strong>Estado:</strong> ' . htmlspecialchars($livro['estado']) . '</p>';
+            echo '</div>';
 
-                // Obtém a primeira imagem se houver múltiplas separadas por vírgula
-                $imagens = explode(",", $livro['imagens']);
-                $primeiraImagem = $imagens[0];
-
-                echo '<div class="card-livro" data-id="' . htmlspecialchars($livro['id']) . '" data-usuario="' . htmlspecialchars($usuario) . '">';
-                echo '<div class="header-usuario">';
-                echo '<img src="imagens/icone-perfil.svg" class="perfil-icon" alt="Perfil">';
-                echo '<span class="user">' . $usuario . '</span>';
-                echo '</div>';
-                echo '<img src="uploads/' . htmlspecialchars($primeiraImagem) . '" class="imagem-livro" alt="Capa do Livro">';
-                echo '<div class="info-livro">';
-                echo '<p class="titulo"><strong>Título:</strong> ' . htmlspecialchars($livro['titulo']) . '</p>';
-                echo '<p class="genero"><strong>Gênero:</strong> ' . htmlspecialchars($livro['genero']) . '</p>';
-                echo '<p class="autor"><strong>Autor:</strong> ' . htmlspecialchars($livro['autor']) . '</p>';
-                echo '<p class="estado"><strong>Estado:</strong> ' . htmlspecialchars($livro['estado']) . '</p>';
-                echo '</div>';
-                echo '</div>';
-            }
-        } else {
-            echo '<p>Nenhum livro encontrado.</p>';
+            if ($livro['id_usuario'] != $_SESSION['id']) {
+    echo '<form action="listadedesejo.php" method="POST">';
+    echo '<input type="hidden" name="id_livro" value="' . htmlspecialchars($livro['id']) . '">';
+    echo '<button type="submit" class="btn-card">Adicionar à lista de desejos</button>';
+    echo '</form>';
+}
+            
+            echo '</div>';
         }
-        $conn->close();
-        ?>
-    </main>
+    } else {
+        echo '<p>Nenhum livro encontrado.</p>';
+    }
+    $conn->close();
+    ?>
+</main>
+
 
     <!-- Pop-up para publicar livro -->
     <div id="popupOverlay" class="popup-overlay">
@@ -188,7 +304,14 @@ $result = $conn->query($query);
                     <input type="text" name="autor" placeholder="Autor" required>
                 </div>
                 <div class="input-container">
-                    <input type="text" name="genero" placeholder="Gênero" required>
+                    <input list="genero" name="genero" placeholder="Gênero" required>
+                    <datalist id="genero">
+                        <option value="Romance"></option>
+                        <option value="Terror"></option>
+                        <option value="Suspense"></option>
+                        <option value="Comédia"></option>
+                        <option value="Comédia Romântica"></option>
+                    </datalist>
                 </div>
                 <div class="input-container">
                     <select name="estado" required>
@@ -206,7 +329,8 @@ $result = $conn->query($query);
         </div>
     </div>
 
-    <!-- Modal para detalhes do livro -->
+
+ <!-- Modal para detalhes do livro atualizado -->
     <div id="modalLivro" class="modal" style="display:none;">
         <div class="modal-content">
             <span class="fechar" onclick="fecharModal()">&times;</span>
@@ -278,36 +402,40 @@ $result = $conn->query($query);
             });
         });
 
-        // Função para mostrar detalhes do livro
-        function mostrarDetalhesLivro(cardElement) {
-            const modal = document.getElementById("modalLivro");
-            const modalContent = document.getElementById("modalDetalhesLivro");
+      
+    // Função para mostrar detalhes do livro
+    function mostrarDetalhesLivro(cardElement) {
+        const modal = document.getElementById("modalLivro");
+        const modalContent = document.getElementById("modalDetalhesLivro");
 
-            // Extrai dados do card
-            const usuario = cardElement.getAttribute("data-usuario");
-            const imagemSrc = cardElement.querySelector(".imagem-livro").src;
-            const tituloText = cardElement.querySelector(".titulo").innerText;
-            const generoText = cardElement.querySelector(".genero").innerText;
-            const autorText = cardElement.querySelector(".autor").innerText;
-            const estadoText = cardElement.querySelector(".estado").innerText;
+        // Extrai dados do card
+        const usuario = cardElement.getAttribute("data-usuario");
+        const imagemSrc = cardElement.querySelector(".imagem-livro").src;
+        const tituloText = cardElement.querySelector(".titulo").innerText;
+        const generoText = cardElement.querySelector(".genero").innerText;
+        const autorText = cardElement.querySelector(".autor").innerText;
+        const estadoText = cardElement.querySelector(".estado").innerText;
+        
+        // Obtém a foto de perfil do elemento clicado
+        const fotoPerfilSrc = cardElement.querySelector(".perfil-icon").src;
 
-            // Insere conteúdo estruturado
-            modalContent.innerHTML = `
-                <div class="header-usuario">
-                    <img src="imagens/icone-perfil.svg" class="perfil-icon" alt="Perfil">
-                    <span class="user">${usuario}</span>
-                </div>
-                <img class="modal-img" src="${imagemSrc}" alt="Capa do Livro">
-                <div class="modal-info">
-                    <p>${tituloText}</p>
-                    <p>${generoText}</p>
-                    <p>${autorText}</p>
-                    <p>${estadoText}</p>
-                </div>
-            `;
+        // Insere conteúdo estruturado com a foto de perfil
+        modalContent.innerHTML = `
+            <div class="header-usuario" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <img src="${fotoPerfilSrc}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" alt="Perfil">
+                <span class="user" style="font-weight: bold;">${usuario}</span>
+            </div>
+            <img class="modal-img" src="${imagemSrc}" alt="Capa do Livro" style="max-width: 100%; border-radius: 8px; margin-bottom: 15px;">
+            <div class="modal-info" style="line-height: 1.6;">
+                <p>${tituloText}</p>
+                <p>${generoText}</p>
+                <p>${autorText}</p>
+                <p>${estadoText}</p>
+            </div>
+        `;
 
-            modal.style.display = "flex";
-        }
-    </script>
+        modal.style.display = "flex";
+    }
+</script>
 </body>
 </html>

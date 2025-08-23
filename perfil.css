@@ -1,3 +1,4 @@
+/* Reset e estilo base */
 body {
     background-color: #fff;
     font-family: Arial, sans-serif;
@@ -6,7 +7,7 @@ body {
     height: 100%; /* Garante que o body ocupe 100% da altura da tela */
 }
 
-/* Cabeçalho */
+/* Cabeçalho fixo */
 .header {
     background-color: #ecf7e6;
     display: flex;
@@ -21,12 +22,12 @@ body {
     z-index: 1000;
 }
 
-/* Container da página de perfil */
+/* Container principal da página de perfil */
 .perfil-container {
     display: flex;
-    padding: 100px 30px 30px; /* Ajusta o padding para não sobrepor o cabeçalho fixo */
+    padding: 100px 30px 30px; /* Espaço para o cabeçalho fixo */
     width: 100%;
-    height: calc(100vh - 70px); /* Faz o container ocupar a altura total da tela, subtraindo a altura do cabeçalho */
+    height: calc(100vh - 70px); /* Altura da tela menos altura do cabeçalho */
 }
 
 /* Área do perfil */
@@ -34,16 +35,17 @@ body {
     background-color: #f5f5f5;
     border-radius: 15px;
     padding: 20px;
-    width: 33.33%; /* Faz a área do perfil ocupar 1/3 da tela */
+    width: 33.33%; /* Ocupa 1/3 da largura */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-right: 30px; /* Espaço entre a área do perfil e os livros */
-    flex-shrink: 0; /* Garante que o perfil não encolha */
-    height: 100%; /* Garante que o container de perfil ocupe toda a altura da tela */
+    margin-right: 30px;
+    flex-shrink: 0;
+    height: 100%; /* Ocupa altura total do container */
 }
 
+/* Ícone do perfil */
 .perfil-info .perfil-icon {
     width: 100px;
     height: 100px;
@@ -51,6 +53,7 @@ body {
     margin-bottom: 15px;
 }
 
+/* Detalhes do perfil */
 .perfil-info .perfil-details h2 {
     margin: 0;
     font-size: 22px;
@@ -63,27 +66,50 @@ body {
     color: #777;
 }
 
+/* Botões editar e deletar dentro do perfil */
 .perfil-info .perfil-details a.editar {
-    background-color: #5dbb63; /* Verde para o botão de editar */
+    background-color: #5dbb63;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
 }
 
 .perfil-info .perfil-details a.editar:hover {
-    background-color: #4aa653; /* Cor mais escura ao passar o mouse */
+    background-color: #4aa653;
 }
 
 .perfil-info .perfil-details a.deletar {
-    background-color: #e74c3c; /* Vermelho para o botão de deletar */
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
 }
 
 .perfil-info .perfil-details a.deletar:hover {
-    background-color: #c0392b; /* Cor mais escura ao passar o mouse */
+    background-color: #c0392b;
+}
+
+/* Links sociais empilhados */
+.perfil-social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
 }
 
 /* Livros publicados */
 .livros-publicados {
-    flex-grow: 1; /* Garante que os livros ocupem o restante da largura */
-    height: 100%; /* Garante que a seção de livros ocupe a altura restante */
-    overflow-y: auto; /* Permite rolar a lista de livros, caso seja necessário */
+    flex-grow: 1;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .livros-publicados h3 {
@@ -91,6 +117,7 @@ body {
     margin-bottom: 20px;
 }
 
+/* Cada livro */
 .livro {
     display: flex;
     align-items: center;
@@ -109,10 +136,10 @@ body {
     color: #333;
 }
 
-/* Botões estilizados */
+/* Botões gerais estilizados */
 .botao-estilizado {
     display: inline-block;
-    background-color: #5dbb63; /* Verde para o botão */
+    background-color: #5dbb63;
     color: white;
     text-decoration: none;
     padding: 12px 20px;
@@ -122,19 +149,284 @@ body {
     text-align: center;
     margin: 10px 0;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    width: 100%; /* Faz o botão ocupar toda a largura do container */
+    width: 100%; /* Ocupa toda a largura do container */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 }
 
 .botao-estilizado:hover {
-    background-color: #4aa653; /* Cor mais escura ao passar o mouse */
-    transform: scale(1.05); /* Leve aumento no tamanho */
+    background-color: #4aa653;
+    transform: scale(1.05);
 }
 
 .botao-estilizado.deletar {
-    background-color: #e74c3c; /* Vermelho para o botão de deletar */
+    background-color: #e74c3c;
 }
 
 .botao-estilizado.deletar:hover {
-    background-color: #c0392b; /* Cor mais escura ao passar o mouse */
+    background-color: #c0392b;
+}
+
+
+.foto-perfil-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.foto-perfil-container:hover .foto-perfil-overlay {
+    opacity: 1;
+}
+
+.foto-perfil-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 50%;
+}
+
+.foto-perfil-overlay span {
+    text-align: center;
+    font-size: 14px;
+    margin: 5px;
+}
+
+#fotoPerfilPopup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.foto-perfil-popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+}
+
+.foto-perfil-popup-content h3 {
+    margin-top: 0;
+}
+
+.foto-perfil-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.foto-perfil-options button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.foto-perfil-upload-btn {
+    background: #4CAF50;
+    color: white;
+}
+
+.foto-perfil-remove-btn {
+    background: #f44336;
+    color: white;
+}
+
+.foto-perfil-cancel-btn {
+    background: #ccc;
+}
+
+/* Estilos para os livros */
+.livro-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.livro-info {
+    flex-grow: 1;
+    margin-left: 15px;
+}
+
+.livro-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-action {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.btn-editar {
+    background: #4CAF50;
+    color: white;
+}
+
+.btn-editar:hover {
+    background: #45a049;
+}
+
+.btn-deletar {
+    background: #f44336;
+    color: white;
+}
+
+.btn-deletar:hover {
+    background: #da190b;
+}
+
+/* Popup de confirmação */
+.popup-confirmacao {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 400px;
+    text-align: center;
+}
+
+.popup-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.popup-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-confirmar {
+    background: #f44336;
+    color: white;
+}
+
+.btn-cancelar {
+    background: #ccc;
+    color: #333;
+}
+
+/* Estilos do popup de edição (novos) */
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.popup {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    position: relative;
+}
+.popup-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.popup-header h2 {
+    margin: 0;
+}
+.fechar-imagem {
+    width: 24px;
+    cursor: pointer;
+}
+.upload-area {
+    background-color: #f0f0f0;
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.input-container {
+    margin-bottom: 15px;
+}
+.input-container input,
+.input-container select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.postar {
+    background-color: #5dbb63;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+.preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.preview-container img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid #ccc;
+    transition: 0.2s;
+}
+.preview-container img:hover {
+    transform: scale(1.05);
+    border-color: red;
 }

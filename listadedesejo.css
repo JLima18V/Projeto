@@ -27,5 +27,9 @@
 .conteudo-lista {
     margin-top: 80px; /* Para não sobrepor o cabeçalho */
     padding: 20px;
-    color: #fff;
+    color:  #000000;
+}
+
+.card-livro a{
+    text-decoration: none;
 }

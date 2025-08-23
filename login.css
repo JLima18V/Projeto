@@ -1,0 +1,522 @@
+*{
+    font-family: 'Arial', sans-serif, 'roboto';
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(45deg, #E8F5E8, #C8E6C9);
+}
+.wrapper{
+    width: 420px;
+    padding: 48px 32px 40px 32px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 1.5px solid #3f9142;
+    min-height: 380px;
+}
+.wrapper h1{
+    font-size: 34px;
+    text-align: center;
+    margin-bottom: 36px;
+    color: #2E7D32;
+    font-weight: bold;
+}
+.login-tab {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+}
+.login-tab span {
+    font-size: 18px;
+    font-weight: 500;
+    color: #2E7D32;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #3f9142;
+}
+.wrapper .input-box {
+    position: relative;
+    width: 100%;
+    margin: 18px 0 0 0;
+    height: 56px;
+}
+.wrapper .input-box:first-of-type {
+    margin-top: 56px;
+}
+.input-box input{
+    width: 100%;
+    background-color: transparent;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 28px;
+    font-size: 17px;
+    color: #222;
+    padding: 14px 48px 14px 18px;
+    box-sizing: border-box;
+    height: 56px;
+    transition: border 0.2s;
+}
+.input-box input:focus {
+    border: 1.5px solid #3f9142;
+    outline: none;
+}
+.input-box input::placeholder{
+    color: #999;
+    transition: color 0.3s ease;
+}
+.input-box label {
+    font-weight: 500;
+    color: #4e4e4e;
+    margin-bottom: 4px;
+    display: block;
+    margin-left: 8px;
+    font-size: 15px;
+}
+.input-box .input-icon, .input-box .eye-btn {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    display: block;
+    z-index: 2;
+    background: none;
+    border: none;
+    padding: 0;
+}
+.input-box .input-icon {
+    pointer-events: none;
+    opacity: 0.7;
+    transition: filter 0.3s ease;
+}
+.input-box .eye-btn img {
+    width: 22px;
+    height: 23px;
+    display: block;
+    filter: grayscale(100%) brightness(0) opacity(0.7);
+    transition: filter 0.3s ease;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.wrapper button.eye-btn {
+    width: auto !important;
+    padding: 0 !important;
+    background: none !important;
+    color: inherit !important;
+    border: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    font-size: inherit !important;
+    transition: none !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: 20px !important;
+    transform: translateY(-50%) !important;
+    cursor: pointer !important;
+}
+.wrapper .lembrar-equeceu {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    margin: 8px 0 0 0;
+}
+.lembrar-equeceu label input{
+    accent-color: #000000;
+    margin-right: 3px;
+}
+.lembrar-equeceu label input[type="checkbox"] {
+    accent-color: #3d8f40;
+    margin-right: 3px;
+}
+.lembrar-equeceu a,
+.cadastro p a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: 600;
+}
+.lembrar-equeceu a:hover,
+.cadastro p a:hover {
+    text-decoration: underline;
+}
+.wrapper .cadastro {
+    font-size: 16px;
+    text-align: center;
+    margin-top: 4px;
+    margin-bottom: 12px;
+}
+.cadastro p a {
+    color: #4CAF50;
+    font-weight: 600;
+}
+.wrapper button:not(.eye-btn),
+.wrapper .botao-cadastro {
+    width: 100%;
+    padding: 15px 0;
+    background: linear-gradient(90deg, #4CAF50 60%, #2E7D32 100%);
+    color: #fff;
+    border: none;
+    border-radius: 28px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(5, 211, 49, 0.15);
+    margin-top: 16px;
+    margin-bottom: 8px;
+    transition: background 0.3s, transform 0.2s;
+}
+.wrapper button:not(.eye-btn):hover,
+.wrapper .botao-cadastro:hover {
+    background-position: right center;
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 4px 16px rgba(5, 211, 49, 0.25);
+}
+
+/* Flutuante label para input-box */
+.input-box {
+    position: relative;
+}
+.floating-label {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 14px;
+    font-weight: 400;
+    pointer-events: none;
+    background: #fff;
+    padding: 0 6px;
+    transition: 0.2s;
+    z-index: 3;
+}
+.input-box input:focus ~ .floating-label,
+.input-box input:not(:placeholder-shown) ~ .floating-label {
+    top: -3px;
+    left: 16px;
+    font-size: 13px;
+    color: #2E7D32;
+    font-weight: 600;
+    background: #fff;
+    padding: 0 6px;
+}
+.input-box input:focus ~ .floating-label {
+    top: -3px;
+    left: 16px;
+    font-size: 13px;
+    color: #2E7D32;
+    font-weight: 600;
+    background: #fff;
+    padding: 0 6px;
+}
+.input-box input:not(:placeholder-shown):not(:focus) ~ .floating-label {
+    top: -3px;
+    left: 16px;
+    font-size: 13px;
+    color: #888;
+    font-weight: 600;
+    background: #fff;
+    padding: 0 6px;
+}
+
+/* CORREÇÃO PARA NOME E SOBRENOME LADO A LADO */
+.nome-sobrenome-row {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 16px !important;
+    width: 100% !important;
+    margin: 18px 0 0 0 !important;
+}
+.nome-sobrenome-row .input-box {
+    flex: 1 1 0 !important;
+    margin: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 56px !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+}
+.nome-sobrenome-row .input-box input {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 14px 18px !important;
+    box-sizing: border-box !important;
+}
+
+/* ESPAÇAMENTO ESPECÍFICO PARA CADASTRO */
+#cadastroForm .input-box {
+    margin: 16px 0 0 0;
+}
+
+/* Nome de usuário com menos espaço abaixo */
+#cadastroForm .input-box:has(#nome_usuario) {
+    margin-bottom: -8px;
+}
+
+.separador-cadastro {
+    width: 100%;
+    border-top: 1px solid #e0e0e0;
+    border: none;
+    margin: 12px 0 8px 0; /* Reduzido o espaçamento */
+}
+
+/* Senhas mais próximas entre si */
+#cadastroForm .input-box:has(#cadastro_senha) {
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+#cadastroForm .input-box:has(#confirmar_senha) {
+    margin-top: 8px;
+}
+
+/* ===== SISTEMA DE MENSAGENS DE ERRO COM ANIMAÇÕES ===== */
+/* Mensagem de erro no login - SEM ANIMAÇÃO DOS OUTROS ELEMENTOS */
+.login-error-message {
+    background: #f8d7da;
+    color: #721c24;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 0 0 18px 0; /* Removido margin-top para evitar empurrar outros elementos */
+    text-align: center;
+    font-size: 16px;
+    border: 1px solid #f5c6cb;
+    font-weight: 500;
+    box-sizing: border-box;
+    width: 100%;
+    display: block;
+    position: static; /* Mudado de relative para static */
+    overflow: hidden;
+    transform: translateY(0);
+    opacity: 1;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modifique a regra do fade-out para ser específica do login */
+#loginForm .login-error-message.fade-out {
+    transform: translateY(-10px);
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mantenha as mensagens de erro do cadastro sempre visíveis */
+#cadastroForm .login-error-message {
+    display: block;
+    opacity: 1;
+    transform: none;
+}
+
+/* Animação de saída para mensagem de login */
+.login-error-message.fade-out {
+    transform: translateY(-10px);
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Container de erros do cadastro - POSICIONAMENTO MELHORADO */
+#cadastro-error-message {
+    background: #f8d7da;
+    color: #721c24;
+    border-radius: 8px;
+    padding: 0;
+    margin: 0 0 20px 0; /* Espaço consistente abaixo */
+    font-size: 15px;
+    border: 1px solid #f5c6cb;
+    font-weight: 500;
+    box-sizing: border-box;
+    width: 100%;
+    display: none;
+    max-height: 0;
+    overflow: hidden;
+    transform: translateY(0); /* Removido o translateY inicial */
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: static; /* Garante que não afete outros elementos */
+}
+
+/* Quando os erros aparecem */
+#cadastro-error-message.show {
+    display: block;
+    padding: 16px 20px; /* Padding mais generoso */
+    max-height: 300px;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Lista de erros - COM MELHOR ESPAÇAMENTO */
+#cadastro-error-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#cadastro-error-list li {
+    margin: 0;
+    padding: 6px 0; /* Mais espaço entre erros */
+    border-bottom: 1px solid rgba(114, 28, 36, 0.1);
+    animation: slideInError 0.3s ease-out forwards;
+    transform: translateX(-10px);
+    opacity: 0;
+    line-height: 1.4; /* Melhor legibilidade */
+}
+
+#cadastro-error-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Animação para cada item de erro individual */
+@keyframes slideInError {
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Delay progressivo para múltiplos erros */
+#cadastro-error-list li:nth-child(1) { animation-delay: 0s; }
+#cadastro-error-list li:nth-child(2) { animation-delay: 0.1s; }
+#cadastro-error-list li:nth-child(3) { animation-delay: 0.2s; }
+#cadastro-error-list li:nth-child(4) { animation-delay: 0.3s; }
+#cadastro-error-list li:nth-child(5) { animation-delay: 0.4s; }
+
+/* Animação de saída para os erros do cadastro */
+#cadastro-error-message.fade-out {
+    transform: translateY(-10px);
+    opacity: 0;
+    max-height: 0;
+    padding: 0;
+    margin-bottom: 0;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mensagens de erro inline (senhas) - POSICIONAMENTO CORRIGIDO */
+#erro_senha, #erro_tamanho {
+    color: #d32f2f;
+    font-size: 0.8em;
+    margin-top: 4px;
+    display: block;
+    transform: translateY(-5px);
+    opacity: 0;
+    transition: all 0.3s ease-out;
+    position: absolute;
+    left: 18px;
+    bottom: -22px; /* Ajustado para não sobrepor */
+    width: calc(100% - 36px); /* Largura responsiva */
+    z-index: 1;
+}
+
+#erro_senha.show, #erro_tamanho.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Ajustar espaçamento quando há erros inline */
+.input-box:has(#erro_senha:not([style*="display: none"])), 
+.input-box:has(#erro_tamanho:not([style*="display: none"])) {
+    margin-bottom: 28px; /* Mais espaço para acomodar o erro */
+}
+
+/* Animação de entrada suave para todo o formulário */
+#loginForm, #cadastroForm {
+    animation: formSlideIn 0.5s ease-out;
+}
+
+@keyframes formSlideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Transição suave entre formulários */
+#loginForm.fade-out, #cadastroForm.fade-out {
+    animation: formSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes formSlideOut {
+    to {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+}
+
+/* Efeito de hover mais suave nos links */
+.lembrar-equeceu a, .cadastro p a {
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.lembrar-equeceu a:hover, .cadastro p a:hover {
+    color: #2E7D32;
+}
+
+/* CORREÇÕES ESPECÍFICAS PARA EVITAR SOBREPOSIÇÃO */
+/* Garante que o primeiro input-box do cadastro tenha espaço adequado após erros */
+#cadastroForm .input-box:first-of-type {
+    margin-top: 24px; /* Espaço após mensagens de erro */
+}
+
+/* Espaçamento especial quando há mensagem de erro visível */
+#cadastroForm:has(#cadastro-error-message.show) .input-box:first-of-type {
+    margin-top: 8px; /* Menos espaço quando erro está visível */
+}
+
+/* Adicione no início do arquivo, junto com as outras animações */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+}
+
+/* Estilo do input com erro */
+.input-box input.error-shake {
+    border-color: #d32f2f !important;
+    animation: shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Estilo do ícone e placeholder quando há erro */
+.input-box input.error-shake::placeholder {
+    color: #d32f2f !important;
+}
+
+.input-box input.error-shake ~ .input-icon {
+    filter: invert(32%) sepia(98%) saturate(1943%) hue-rotate(335deg) brightness(85%) contrast(89%);
+    animation: shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.input-box input.error-shake ~ .eye-btn,
+.input-box input.error-shake ~ .eye-btn img {
+    filter: invert(32%) sepia(98%) saturate(1943%) hue-rotate(335deg) brightness(85%) contrast(89%);
+    animation: shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Transições suaves para os estados normais */
+.input-box input::placeholder,
+.input-box .input-icon,
+.input-box .eye-btn,
+.input-box .eye-btn img {
+    transition: all 0.3s ease;
+}

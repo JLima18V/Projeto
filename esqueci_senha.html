@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperar Senha - Troca Troca JK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="edit_perfil.css">
+    <style>
+      body {
+    background-color: hsl(122, 36%, 86%);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.recuperar-container {
+    width: 90%;
+    max-width: 350px;
+    padding: 40px 40px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+
+.logo {
+    display: block;
+    margin: 0 auto 20px auto; /* Centraliza horizontalmente e dá margem abaixo */
+    height: 50px;
+}
+
+.btn-primary {
+    background-color: hsl(124, 37%, 45%);
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 10px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.btn-primary:hover {
+    background-color: hsl(124, 37%, 40%);
+}
+
+.form-label {
+    display: block;
+    text-align: left;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+.text-center {
+    text-align: left;
+}
+
+.text-center a {
+    color: hsl(124, 37%, 45%);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.text-center a:hover {
+    text-decoration: underline;
+}
+
+h4.text-center {
+    color: hsl(124, 37%, 45%);
+    /* a cor verde que você usou no botão */
+    font-weight: 700; /* opcional, para deixar mais destacado */
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="recuperar-container">
+            <img src="imagens/logo-trocatrocajk.png" alt="Logo" class="logo">
+            <h4 class="text-center">Recuperar Senha</h4>
+            <form action="enviar_recuperacao.php" method="POST" class = "editar-perfil-form">
+                <div class="mb-3">
+                    <label for="email" class="form-label">E-mail cadastrado</label>
+                    <input type="email" class="form-control" name="email" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Enviar link</button>
+            </form>
+            <div class="text-center mt-3">
+                <a href="login.php">Voltar ao login</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

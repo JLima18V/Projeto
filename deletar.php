@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirmar'])) {
 
     if ($stmt->execute()) {
         session_destroy(); // Destroi a sessão para deslogar o usuário
-        header("Location: login.html"); // Redireciona para a tela de login
+        header("Location: login.php"); // Redireciona para a tela de login
         exit();
     } else {
         echo "Erro ao excluir a conta.";

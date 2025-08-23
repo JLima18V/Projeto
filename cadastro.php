@@ -45,18 +45,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql = "INSERT INTO usuarios (email, nome_usuario, senha_hash, nome_sobrenome) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssss", $email, $nome_usuario, $senha, $nome_sobrenome);
+try {
+    $stmt->execute();
 
-        if ($stmt->execute()) {
-            $_SESSION['nome_usuario'] = $nome_usuario;
-            $_SESSION['nome_sobrenome'] = $nome_sobrenome;
-            $_SESSION['id'] = $stmt->insert_id;
+    $_SESSION['nome_usuario'] = $nome_usuario;
+    $_SESSION['nome_sobrenome'] = $nome_sobrenome;
+    $_SESSION['id'] = $stmt->insert_id;
 
-            $sucesso = true;
-            header("Location: login.html");
-            exit;
-        } else {
-            echo "Erro: " . $stmt->error;
-        }
+    $sucesso = true;
+    header("Location: login.php");
+    exit;
+} catch (mysqli_sql_exception $e) {
+    if (strpos($e->getMessage(), "Duplicate entry") !== false && strpos($e->getMessage(), "usuarios.email") !== false) {
+        $erro_email = "Este e-mail já está cadastrado. Tente outro ou <a href='login.php'>faça login</a>.";
+    } else {
+        echo "Erro inesperado: " . $e->getMessage();
+    }
+}
+
 
         $stmt->close();
         $conn->close();

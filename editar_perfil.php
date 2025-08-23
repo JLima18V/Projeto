@@ -1,16 +1,18 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="imagens/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="edit_perfil.css">
+            <link rel="stylesheet" href="edit_perfil.css">
+
     <title>Editar Perfil</title>
 </head>
 <body>
     <!-- Cabeçalho -->
     <header class="header">
-        <a href="homepage.php">
+            <a href="homepage.php">
             <img src="imagens/logo-trocatrocajk.png" alt="Logo" class="logo">
         </a>
         <div class="search-container">
@@ -19,7 +21,7 @@
         </div>
         <div class="icons">
             <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()">
-            <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.html'">
+            <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.php'">
             <img src="imagens/icone-mensagem.svg" alt="Chat">
             <img src="imagens/icone-perfil.svg" alt="Perfil" onclick="window.location.href='perfil.php'">
         </div>
@@ -35,7 +37,7 @@
         $id = $_SESSION['id'];
 
         // Busca os dados do usuário
-        $sql = "SELECT nome_usuario FROM usuarios WHERE id = ?";
+        $sql = "SELECT nome_usuario, instagram, whatsapp FROM usuarios WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -52,8 +54,14 @@
             <label for="nome_usuario">Nome de Usuário:</label>
             <input type="text" id="nome_usuario" name="nome_usuario" value="<?php echo $usuario['nome_usuario']; ?>" required>
 
-            <label for="senha">Nova Senha (opcional):</label>
-            <input type="password" id="senha" name="senha">
+             <!-- <label for="senha">Nova Senha (opcional):</label>   
+            <input type="password" id="senha" name="senha"> -->
+
+            <label for="instagram">Instagram:</label>
+            <input type="text" name="instagram" id="instagram" value="<?= htmlspecialchars($usuario['instagram']) ?>">
+
+            <label for="whatsapp">WhatsApp:</label>
+            <input type="text" name="whatsapp" id="whatsapp" value="<?= htmlspecialchars($usuario['whatsapp']) ?>">
 
             <div class="botoes-container">
                 <button type="submit" class="botao-estilizado salvar">Salvar Alterações</button>
