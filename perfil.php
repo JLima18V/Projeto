@@ -403,6 +403,39 @@
                 transform: scale(1.05);
                 border-color: red;
             }
+
+            /* Estilos para o dropdown do perfil */
+            .profile-dropdown {
+                position: relative;
+                display: inline-block;
+            }
+
+            .profile-dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #f9f9f9;
+                min-width: 160px;
+                box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+                z-index: 1;
+                right: 0;
+                border-radius: 5px;
+            }
+
+            .profile-dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                transition: background-color 0.3s;
+            }
+
+            .profile-dropdown-content a:hover {
+                background-color: #f1f1f1;
+            }
+
+            .profile-dropdown:hover .profile-dropdown-content {
+                display: block;
+            }
         </style>
     </head>
     <body>
@@ -419,10 +452,21 @@
                 <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()">
                 <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.php'">
                 <img src="imagens/icone-mensagem.svg" alt="Chat">
-                <div class="foto-perfil-container" onclick="abrirFotoPerfilPopup()">
-                    <img src="<?= $usuario['foto_perfil'] ? 'imagens/perfis/' . $usuario['foto_perfil'] : 'imagens/icone-perfil.svg' ?>" alt="Perfil" class="perfil-icon" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-                    <div class="foto-perfil-overlay">
-                        <span><?= $usuario['foto_perfil'] ? 'Alterar foto' : 'Adicionar foto' ?></span>
+                
+                <!-- Ícone de perfil com dropdown -->
+                <div class="profile-dropdown">
+                    <div class="foto-perfil-container" onclick="abrirFotoPerfilPopup()">
+                        <img src="<?= $usuario['foto_perfil'] ? 'imagens/perfis/' . $usuario['foto_perfil'] : 'imagens/icone-perfil.svg' ?>" 
+                             alt="Perfil" 
+                             class="perfil-icon" 
+                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                        <div class="foto-perfil-overlay">
+                            <span><?= $usuario['foto_perfil'] ? 'Alterar foto' : 'Adicionar foto' ?></span>
+                        </div>
+                    </div>
+                    <div class="profile-dropdown-content">
+                        <a href="editar_perfil.php">Editar Conta</a>
+                        <a href="confirmar_saida.html">Sair</a>
                     </div>
                 </div>
             </div>
@@ -543,15 +587,6 @@
                             </a> </p>
                         <?php endif; ?>
                     </div>
-                    <a href="editar_perfil.php">
-                        <button class="botao-estilizado editar">Editar Perfil</button>
-                    </a>
-                    <a href="confirmar_exclusao.html">
-                        <button class="botao-estilizado deletar">Deletar Perfil</button>
-                    </a>
-                    <a href="confirmar_saida.html">
-                        <button class="botao-estilizado deletar">Sair</button>
-                    </a>
                 </div>
             </div>
 

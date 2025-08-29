@@ -181,15 +181,23 @@ body {
 }
 
 .card-livro {
-    background: #f9f9f9;
+    background: white;
     border-radius: 15px;
-    padding: 10px;
+    padding: 15px;
     width: 250px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
     cursor: pointer;
+    position: relative;
+}
+
+.card-livro:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.card-livro:hover .imagem-livro {
+    transform: scale(1.02);
 }
 
 .card-livro img.imagem-livro {
@@ -197,6 +205,7 @@ body {
     height: 200px;
     object-fit: cover;
     border-radius: 10px;
+    transition: all 0.3s ease;
 }
 
 .card-livro .header-usuario {
@@ -272,18 +281,80 @@ body {
     position: relative;
 }
 
-.modal-img {
+.modal-img-container {
+    position: relative;
     width: 100%;
-    max-height: 300px;
-    object-fit: cover;
+    height: 400px;
     margin-bottom: 20px;
     border-radius: 10px;
+    overflow: hidden;
+}
+
+.modal-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    z-index: 10;
+}
+
+.nav-arrow:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.nav-arrow.left {
+    left: 10px;
+}
+
+.nav-arrow.right {
+    right: 10px;
+}
+
+.nav-text {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1;
+    user-select: none;
+}
+
+.image-counter {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.image-counter img {
+    width: 16px;
+    height: 16px;
 }
 
 .modal-info {
     text-align: left;
     width: 100%;
-    max-width: 400px;
+    padding: 15px;
 }
 
 .modal .fechar {
@@ -305,6 +376,8 @@ body {
 .perfil-icon {
     width: 30px;
     height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .user {
@@ -346,4 +419,113 @@ body {
 .card-livro a{
     text-decoration: none;
     color: black;
+}
+
+.heart-icon {
+    width: 24px;
+    height: 24px;
+    fill: #ccc;
+    transition: all 0.3s ease;
+}
+
+/* Botão de Favorito (aplicável em card e modal) */
+.wishlist-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+    z-index: 2;
+}
+
+.wishlist-btn .heart-icon {
+    font-size: 20px;
+    color: #ccc;
+    transition: color 0.3s ease;
+}
+
+.wishlist-btn.active .heart-icon {
+    color: #ff69b4;
+}
+
+.wishlist-btn:hover {
+    transform: scale(1.1);
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 9999;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.imagem-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.info-overlay {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/* Ajuste para foto de perfil no header */
+.foto-perfil-container img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Ajuste para ícone de perfil nos cards */
+.perfil-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Ajuste para foto de perfil no modal */
+.modal-perfil {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Para garantir que qualquer imagem de perfil seja circular */
+img[src*="icone-perfil.svg"],
+img[src*="perfis/"] {
+    border-radius: 50%;
+    object-fit: cover;
 }
