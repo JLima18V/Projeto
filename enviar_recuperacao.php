@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close();
 
         // Link de redefinição
-        $link = "http://localhost/projetinatt2.2/resetar_senha.php?token=$token";
+        $link = "http://localhost/projetinatt2.3/resetar_senha.php?token=$token";
 
         // Envia o e-mail com PHPMailer
         $mail = new PHPMailer(true);
