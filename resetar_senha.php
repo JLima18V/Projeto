@@ -44,68 +44,98 @@ if (isset($_GET['token'])) {
     <meta charset="UTF-8">
     <title>Nova Senha</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right,rgb(16, 143, 44),rgb(228, 250, 230));
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+     body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(45deg, #E8F5E8, #C8E6C9);
+    color: #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
 
-        .container {
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 30px;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-        }
+.container {
+    background: #fff;
+    padding: 40px 32px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 1.5px solid #3f9142;
+}
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+h2 {
+    text-align: center;
+    margin-bottom: 28px;
+    color: #2E7D32;
+    font-weight: bold;
+    font-size: 24px;
+}
 
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-        }
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #4e4e4e;
+    font-size: 15px;
+}
 
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: none;
-            border-radius: 8px;
-        }
+/* Inputs arredondados */
+input[type="password"] {
+    width: 100%;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 999px; /* bem arredondado */
+    font-size: 16px;
+    color: #222;
+    background: transparent;
+    transition: border 0.2s;
+    box-sizing: border-box;
+}
 
-        .erro {
-            background-color: #ff4c4c;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
+input[type="password"]:focus {
+    border: 1.5px solid #3f9142;
+    outline: none;
+}
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #00c853;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+input::placeholder {
+    color: #999;
+}
 
-        button:hover {
-            background-color: #00b347;
-        }
+/* Mensagem de erro */
+.erro {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    text-align: center;
+    font-size: 15px;
+    border: 1px solid #f5c6cb;
+}
+
+/* Botão arredondado em degradê */
+button {
+    width: 100%;
+    padding: 14px 0;
+    background: linear-gradient(90deg, #4CAF50 60%, #2E7D32 100%);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(5, 211, 49, 0.15);
+    transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-position: right center;
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 4px 16px rgba(5, 211, 49, 0.25);
+}
     </style>
 </head>
 <body>
