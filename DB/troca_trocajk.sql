@@ -27,29 +27,42 @@ CREATE TABLE livros (
   data_publicacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
-  );
+  ON DELETE CASCADE
+   );
+ 
   
   CREATE TABLE lista_desejos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_livro INT NOT NULL,
     data_adicionado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    -- Garantir que o mesmo livro não seja adicionado duas vezes pelo mesmo usuário
     UNIQUE KEY (id_usuario, id_livro),
-
-    -- Chaves estrangeiras (opcional, mas recomendado se você já tem as tabelas)
     CONSTRAINT fk_usuario_desejo FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE,
     CONSTRAINT fk_livro_desejo FOREIGN KEY (id_livro) REFERENCES livros(id) ON DELETE CASCADE
 );
 
 
-ALTER TABLE livros
-DROP FOREIGN KEY livros_ibfk_1;
 
-ALTER TABLE livros
-ADD CONSTRAINT livros_ibfk_1
-FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
-ON DELETE CASCADE;
+CREATE TABLE trocas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_solicitante INT NOT NULL,
+    id_receptor INT NOT NULL,
+    id_livro_solicitado INT NOT NULL,
+    confirm_solicitante TINYINT(1) DEFAULT 0,
+    confirm_receptor TINYINT(1) DEFAULT 0,
+    status ENUM('pendente', 'aceita', 'recusada', 'concluída') DEFAULT 'pendente',
+    data_solicitacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_solicitante) REFERENCES usuarios(id),
+    FOREIGN KEY (id_receptor) REFERENCES usuarios(id),
+    FOREIGN KEY (id_livro_solicitado) REFERENCES livros(id)
+);
 
-select * from lista_desejos;	
+CREATE TABLE trocas_livros_oferecidos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_troca INT NOT NULL,
+    id_livro_oferecido INT NOT NULL,
+    FOREIGN KEY (id_troca) REFERENCES trocas(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_livro_oferecido) REFERENCES livros(id)
+);
+
+

@@ -56,190 +56,9 @@ if (isset($_SESSION['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homepage</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="homepage.css">
     <link rel="icon" href="imagens/favicon.ico" type="image/x-icon">
-    <style>
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .popup {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            width: 400px;
-            max-width: 90%;
-            position: relative;
-        }
-
-        .popup-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .popup-header h2 {
-            margin: 0;
-        }
-
-        .fechar-imagem {
-            width: 24px;
-            cursor: pointer;
-        }
-
-        .upload-area {
-            background-color: #f0f0f0;
-            border: 2px dashed #ccc;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-
-        .input-container {
-            margin-bottom: 15px;
-        }
-
-        .input-container input,
-        .input-container select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .postar {
-            background-color: #5dbb63;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .preview-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .preview-container img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 2px solid #ccc;
-            transition: 0.2s;
-        }
-
-        .preview-container img:hover {
-            transform: scale(1.05);
-            border-color: red;
-        }
-
-        .header-usuario {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.perfil-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.user {
-    text-decoration: none;
-    color: inherit;
-    font-weight: bold;
-}
-
-.user:hover {
-    text-decoration: underline;
-}
-
-.modal-content {
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    max-width: 500px;
-    width: 90%;
-}
-
-.modal-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.modal-perfil {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.modal-img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin-bottom: 15px;
-}
-
-.modal-info {
-    line-height: 1.6;
-}
-
-.fechar {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-/* Navigation arrows */
-.nav-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    z-index: 10;
-}
-
-.nav-arrow:hover {
-    background: rgba(0, 0, 0, 0.7);
-}
-
-.nav-arrow.left {
-    left: 10px;
-}
-
-.nav-arrow.right {
-    right: 10px;
-}
-    </style>
+   
 </head>
 <body>
     <header class="header">
@@ -259,7 +78,7 @@ if (isset($_SESSION['id'])) {
         <div class="icons">
         <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()">
         <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.php'">
-        <img src="imagens/icone-mensagem.svg" alt="Chat">
+        <img src="imagens/icone-mensagem.svg" alt="Trocas Solicitadas" onclick="window.location.href='trocas_solicitadas.php'">
         <div class="foto-perfil-container" onclick="window.location.href='perfil.php'">
             <img src="<?= $foto_perfil_logado ? 'imagens/perfis/' . htmlspecialchars($foto_perfil_logado) : 'imagens/icone-perfil.svg' ?>" alt="perfil" />
         </div>
@@ -303,6 +122,23 @@ if (isset($_SESSION['id'])) {
                     echo '<p class="genero"><strong>Gênero:</strong> ' . htmlspecialchars($livro['genero']) . '</p>';
                     echo '<p class="autor"><strong>Autor:</strong> ' . htmlspecialchars($livro['autor']) . '</p>';
                     echo '<p class="estado"><strong>Estado:</strong> ' . htmlspecialchars($livro['estado']) . '</p>';
+                    // Só mostra o botão se o livro não for do usuário logado
+            
+                   if ($livro['id_usuario'] != $_SESSION['id']) {
+    echo '<a href="perfil.php?modo_troca=1&id_livro_desejado=' . $livro['id'] . '" 
+             class="btn-action btn-troca" 
+             style="
+                 display: inline-block;
+                 padding: 8px 15px;
+                 background-color: #4CAF50;
+                 color: white;
+                 border-radius: 5px;
+                 text-decoration: none;
+                 text-align: center;
+             ">
+             Solicitar Troca
+          </a>';
+}
                 echo '</div>';
             echo '</div>';
         }
