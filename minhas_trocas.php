@@ -62,12 +62,14 @@ if ($result->num_rows > 0) {
 
         // Contatos apenas se a troca foi aceita
         if ($row['status'] === 'aceita') {
+            echo "<b>Entre já em contato:</b>";
             if (!empty($row['whatsapp'])) {
                 $whats = preg_replace('/\D/', '', $row['whatsapp']);
-                echo "<p><a href='https://wa.me/$whats' target='_blank'>WhatsApp: " . htmlspecialchars($row['whatsapp']) . "</a></p>";
+                echo "<p><a href='https://wa.me/$whats' target='_blank'> " . '<img src="imagens/icone-whatsapp.svg" alt="WhatsApp" style="width: 24px; vertical-align: middle;">' . htmlspecialchars($row['whatsapp']) . "</a></p>";
             }
+            
             if (!empty($row['instagram'])) {
-                echo "<p><a href='https://instagram.com/" . htmlspecialchars($row['instagram']) . "' target='_blank'>Instagram: @" . htmlspecialchars($row['instagram']) . "</a></p>";
+                echo "<p><a href='https://instagram.com/" . htmlspecialchars($row['instagram']) . "' target='_blank'>". '<img src="imagens/icone-instagram.svg" alt="Instagram" style="width: 24px; vertical-align: middle;">' . htmlspecialchars($row['instagram']) . "</a></p>";
             }
         }
 
