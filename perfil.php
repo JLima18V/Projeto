@@ -363,7 +363,7 @@ $idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_de
         </div>
 
         <?php if ($modoTroca): ?>
-            Selecione o(s) livro(s) que
+            Selecione o(s) livro(s) que deseja oferecer
             <button type="submit" class="postar" style="margin-top:15px;">Enviar Solicitação de Troca</button>
             </form>
         <?php endif; ?>

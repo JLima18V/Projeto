@@ -53,6 +53,8 @@ if ($result->num_rows > 0) {
     }
 } else {
     echo "<h2>Nenhuma solicitação de troca pendente.</h2>";
+    
+    echo "<a href='perfil.php'>Voltar</a>";
 }
 
 $stmt->close();
