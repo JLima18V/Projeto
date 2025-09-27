@@ -27,43 +27,33 @@
         exit;
     }
 
-    // Processar exclusão de livro
-    if (isset($_POST['deletar_livro'])) {
-        $livro_id = $_POST['livro_id'];
-        
-        // Verificar se o livro pertence ao usuário atual
-        $sql_check = "SELECT imagens FROM livros WHERE id = ? AND id_usuario = ?";
-        $stmt_check = $conn->prepare($sql_check);
-        $stmt_check->bind_param("ii", $livro_id, $_SESSION['id']);
-        $stmt_check->execute();
-        $result_check = $stmt_check->get_result();
-        
-        if ($result_check->num_rows > 0) {
-            $livro_check = $result_check->fetch_assoc();
-            
-            // Deletar imagens do servidor
-            if (!empty($livro_check['imagens'])) {
-                $imagens = explode(',', $livro_check['imagens']);
-                foreach ($imagens as $imagem) {
-                    $caminho_imagem = 'uploads/' . trim($imagem);
-                    if (file_exists($caminho_imagem)) {
-                        unlink($caminho_imagem);
-                    }
-                }
-            }
-            
-            // Deletar livro do banco de dados
-            $sql_delete = "DELETE FROM livros WHERE id = ? AND id_usuario = ?";
-            $stmt_delete = $conn->prepare($sql_delete);
-            $stmt_delete->bind_param("ii", $livro_id, $_SESSION['id']);
-            $stmt_delete->execute();
-            $stmt_delete->close();
-        }
-        $stmt_check->close();
+   if (isset($_POST['toggle_status_livro'])) {
+    $livro_id = $_POST['livro_id'];
+$novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 'disponivel' : 'indisponivel';
+
+    // Verificar se o livro pertence ao usuário
+    $sql_check = "SELECT id FROM livros WHERE id = ? AND id_usuario = ?";
+    $stmt_check = $conn->prepare($sql_check);
+    $stmt_check->bind_param("ii", $livro_id, $_SESSION['id']);
+    $stmt_check->execute();
+    $result_check = $stmt_check->get_result();
+
+    if ($result_check->num_rows > 0) {
+        // Atualizar status
+        $sql_update = "UPDATE livros SET status = ? WHERE id = ? AND id_usuario = ?";
+        $stmt_update = $conn->prepare($sql_update);
+        $stmt_update->bind_param("sii", $novo_status, $livro_id, $_SESSION['id']);
+        $stmt_update->execute();
+        $stmt_update->close();
     }
 
+    $stmt_check->close();
+}
+
+
+
     // Recupera os livros publicados pelo usuário
-    $sql_livros = "SELECT id, titulo, autor, data_publicacao, imagens, genero, estado FROM livros WHERE id_usuario = ? ORDER BY data_publicacao DESC";
+    $sql_livros = "SELECT id, titulo, autor, data_publicacao, imagens, genero, estado, status FROM livros WHERE id_usuario = ? ORDER BY data_publicacao DESC";
 
     $stmt_livros = $conn->prepare($sql_livros);
     $stmt_livros->bind_param("i", $_SESSION['id']);
@@ -140,7 +130,9 @@
         <link rel="stylesheet" href="perfil.css">
         <link rel="icon" href="imagens/favicon.ico" type="image/x-icon">
         <title>Perfil</title>
-        <
+        <style>
+      
+        </style>
     </head>
     <body>
         <!-- Cabeçalho -->
@@ -155,7 +147,7 @@
             <div class="icons">
                 <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()">
                 <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.php'">
-                <img src="imagens/icone-mensagem.svg" alt="Chat">
+                <img src="imagens/icone-mensagem.svg" alt="Trocas Solicitadas" onclick="window.location.href='trocas_solicitadas.php'">
                 
                 <!-- Ícone de perfil com dropdown -->
                 <div class="profile-dropdown">
@@ -195,17 +187,23 @@
             </div>
         </div>
 
-        <!-- Popup de confirmação para deletar livro -->
-        <div id="popupConfirmacao" class="popup-confirmacao">
-            <div class="popup-content">
-                <h3>Confirmar Exclusão</h3>
-                <p>Tem certeza que deseja excluir este livro? Esta ação não pode ser desfeita.</p>
-                <div class="popup-buttons">
-                    <button type="button" class="btn-confirmar" onclick="confirmarExclusao()">Sim, Excluir</button>
-                    <button type="button" class="btn-cancelar" onclick="fecharPopupConfirmacao()">Cancelar</button>
-                </div>
-            </div>
+        <!-- Popup de confirmação para alterar status -->
+<div id="popupConfirmacao" class="popup-confirmacao">
+    <div class="popup-content">
+        <h3>Alterar Status</h3>
+        <p>Deseja realmente marcar este livro como <span id="novoStatusTexto"></span>?</p>
+        <div class="popup-buttons">
+            <form id="formAlterarStatus" method="POST">
+                <input type="hidden" name="alterar_status_livro" value="1">
+                <input type="hidden" name="livro_id" id="livroIdInput">
+                <input type="hidden" name="status" id="statusInput">
+                <button type="submit" class="btn-confirmar">Sim</button>
+            </form>
+            <button type="button" class="btn-cancelar" onclick="fecharPopupConfirmacao()">Cancelar</button>
         </div>
+    </div>
+</div>
+
 
         <!-- POPUP EDITAR LIVRO -->
         <div id="popupOverlayEditar" class="popup-overlay">
@@ -290,43 +288,95 @@
                                 <span><?= htmlspecialchars($usuario['whatsapp']) ?></span>
                             </a> </p>
                         <?php endif; ?>
+                        <a href="minhas_trocas.php">Minhas Trocas</a>
                     </div>
                 </div>
             </div>
 
             <!-- Livros Publicados -->
-            <div class="livros-publicados">
-                <h3>Livros Publicados</h3>
-                <?php if ($result_livros->num_rows > 0): ?>
-                    <div>
-                        <?php while ($livro = $result_livros->fetch_assoc()): ?>
-                            <div class="livro-item">
-                                <?php
-                                    $imagens = explode(',', $livro['imagens']);
-                                    $caminhoImagem = !empty($imagens[0]) ? 'uploads/' . $imagens[0] : 'imagens/sem-imagem.png';
-                                ?>
-                                <img src="<?= $caminhoImagem ?>" alt="Capa do livro" class="livro-capa" style="width: 100px; height: auto; border-radius: 5px;">
-                                
-                                <div class="livro-info">
-                                    <strong><?= htmlspecialchars($livro['titulo']) ?></strong><br>
-                                    Autor: <?= htmlspecialchars($livro['autor']) ?><br>
-                                    Gênero: <?= htmlspecialchars($livro['genero']) ?><br>
-                                    Estado: <?= htmlspecialchars($livro['estado']) ?><br>
-                                    Publicado em: <?= date("d/m/Y", strtotime($livro['data_publicacao'])) ?>
-                                </div>
-                                
-                                <div class="livro-actions">
-                                    <button type="button" class="btn-action btn-editar" onclick="abrirPopupEdicao(event, <?= $livro['id'] ?>, '<?= htmlspecialchars($livro['titulo']) ?>', '<?= htmlspecialchars($livro['autor']) ?>', '<?= htmlspecialchars($livro['genero']) ?>', '<?= htmlspecialchars($livro['estado']) ?>', '<?= htmlspecialchars($livro['imagens']) ?>')">Editar</button>
-                                    <button type="button" class="btn-action btn-deletar" onclick="abrirPopupConfirmacao(<?= $livro['id'] ?>)">Deletar</button>
-                                </div>
-                            </div>
-                        <?php endwhile; ?>
+            <?php
+// Detecta se o usuário veio do modo troca
+$modoTroca = isset($_GET['modo_troca']) && $_GET['modo_troca'] == 1;
+$idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_desejado']) : null;
+?>
+
+<div class="livros-publicados">
+    <h3>Livros Publicados</h3>
+
+    <?php if ($result_livros->num_rows > 0): ?>
+        <?php if ($modoTroca): ?>
+            <form action="processa_troca.php" method="POST">
+                <input type="hidden" name="id_livro_solicitado" value="<?= $idLivroDesejado ?>">
+        <?php endif; ?>
+
+        <div>
+            <?php while ($livro = $result_livros->fetch_assoc()): ?>
+                <div class="livro-item">
+                    <?php
+                        $imagens = explode(',', $livro['imagens']);
+                        $caminhoImagem = !empty($imagens[0]) ? 'uploads/' . $imagens[0] : 'imagens/sem-imagem.png';
+                    ?>
+
+                    <img src="<?= $caminhoImagem ?>" alt="Capa do livro" class="livro-capa" style="width:100px; height:auto; border-radius:5px;">
+
+                    <div class="livro-info">
+                        <?php if ($modoTroca): ?>
+                            <label>
+                                <input type="checkbox" name="livros_oferecidos[]" value="<?= $livro['id'] ?>">
+                                <strong><?= htmlspecialchars($livro['titulo']) ?></strong>
+                            </label><br>
+                        <?php else: ?>
+                            <strong><?= htmlspecialchars($livro['titulo']) ?></strong><br>
+                        <?php endif; ?>
+
+                        Autor: <?= htmlspecialchars($livro['autor']) ?><br>
+                        Gênero: <?= htmlspecialchars($livro['genero']) ?><br>
+                        Estado: <?= htmlspecialchars($livro['estado']) ?><br>
+                        Publicado em: <?= date("d/m/Y", strtotime($livro['data_publicacao'])) ?>
                     </div>
-                <?php else: ?>
-                    <p>Você ainda não publicou nenhum livro.</p>
-                <?php endif; ?>
-            </div>
+
+                    <?php if (!$modoTroca): ?>
+    <div class="livro-actions">
+        <button type="button" class="btn-action btn-editar"
+            onclick="abrirPopupEdicao(event, <?= $livro['id'] ?>, '<?= htmlspecialchars($livro['titulo']) ?>', '<?= htmlspecialchars($livro['autor']) ?>', '<?= htmlspecialchars($livro['genero']) ?>', '<?= htmlspecialchars($livro['estado']) ?>', '<?= htmlspecialchars($livro['imagens']) ?>')">
+            Editar
+        </button>
+
+     
+
+        <!-- Checkbox toggle -->
+        <form method="POST" style="display:inline;">
+            <input type="hidden" name="toggle_status_livro" value="1">
+            <input type="hidden" name="livro_id" value="<?= $livro['id'] ?>">
+            <input type="hidden" name="status" value="indisponivel">
+            <label>
+                <input type="checkbox" name="status" value="disponivel"
+                    onchange="this.form.submit()" <?= $livro['status'] === 'disponivel' ? 'checked' : '' ?>>
+                Disponível
+            </label>
+        </form>
+    </div>
+<?php endif; ?>
+
+                </div>
+            <?php endwhile; ?>
         </div>
+
+        <?php if ($modoTroca): ?>
+            Selecione o(s) livro(s) que
+            <button type="submit" class="postar" style="margin-top:15px;">Enviar Solicitação de Troca</button>
+            </form>
+        <?php endif; ?>
+    <?php else: ?>
+        <p>Você ainda não publicou nenhum livro.</p>
+    <?php endif; ?>
+<?php
+if (isset($_GET['status']) && $_GET['status'] == 'sucesso') {
+    echo "<p style='color: green;'>Solicitação de troca enviada com sucesso!</p>";
+}
+?>
+</div>
+
 
         <!-- Form oculto para deletar livro -->
         <form id="formDeletarLivro" method="POST" style="display: none;">
