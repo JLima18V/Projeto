@@ -161,8 +161,9 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
                         </div>
                     </div>
                     <div class="profile-dropdown-content">
-                        <a href="editar_perfil.php">Editar Conta</a>
-                        <a href="confirmar_saida.html">Sair</a>
+                        <a href="editar_perfil.php">Editar Perfil</a>
+                        <a href="confirmar_saida.html">Sair da Conta</a>
+                        <a href="minhas_trocas.php  ">Minhas Trocas</a>
                     </div>
                 </div>
             </div>
@@ -288,7 +289,7 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
                                 <span><?= htmlspecialchars($usuario['whatsapp']) ?></span>
                             </a> </p>
                         <?php endif; ?>
-                        <a href="minhas_trocas.php">Minhas Trocas</a>
+                        
                     </div>
                 </div>
             </div>

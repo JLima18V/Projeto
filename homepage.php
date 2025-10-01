@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'conexao.php';
+include 'generos.php';
 
 // Modifiquei a query para incluir a foto_perfil e id_usuario
 $termoPesquisa = isset($_POST['q']) ? trim($_POST['q']) : '';
@@ -9,7 +10,8 @@ if (!empty($termoPesquisa)) {
     $sql = "SELECT l.*, u.nome_usuario, u.foto_perfil, u.id as id_dono 
             FROM livros l 
             LEFT JOIN usuarios u ON l.id_usuario = u.id 
-            WHERE l.titulo LIKE ? OR l.autor LIKE ? OR l.genero LIKE ?
+            WHERE (l.titulo LIKE ? OR l.autor LIKE ? OR l.genero LIKE ?)
+              AND l.status = 'disponivel'
             ORDER BY l.id DESC";
     $stmt = $conn->prepare($sql);
     $likeTerm = "%{$termoPesquisa}%";
@@ -20,9 +22,11 @@ if (!empty($termoPesquisa)) {
     $sql = "SELECT l.*, u.nome_usuario, u.foto_perfil, u.id as id_dono 
             FROM livros l 
             LEFT JOIN usuarios u ON l.id_usuario = u.id 
+            WHERE l.status = 'disponivel'
             ORDER BY l.id DESC";
     $result = $conn->query($sql);
 }
+
 
 // Obtém a foto de perfil do usuário logado
 if (isset($_SESSION['id'])) {
@@ -52,6 +56,13 @@ if (isset($_SESSION['id'])) {
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <!-- jQuery (necessário pro Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- CSS e JS do Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homepage</title>
@@ -163,7 +174,7 @@ if (isset($_SESSION['id'])) {
             <!-- Formulário - mantendo exatamente como no original para trabalhar com seu livro_crud.php -->
             <form action="livro_crud.php" method="POST" enctype="multipart/form-data" onsubmit="return validarFormulario()">
                 <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                    <p id="uploadText">Clique para adicionar imagens</p>
+                    <p id="uploadText">Clique para adicionar imagens do livro</p>
                     <input type="file" id="fileInput" name="imagens[]" multiple accept="image/*" style="display: none;" required>
                 </div>
                 <div id="previewContainer" class="preview-container"></div>
@@ -174,16 +185,29 @@ if (isset($_SESSION['id'])) {
                 <div class="input-container">
                     <input type="text" name="autor" placeholder="Autor" required>
                 </div>
-                <div class="input-container">
-                    <input list="genero" name="genero" placeholder="Gênero" required>
-                    <datalist id="genero">
-                        <option value="Romance"></option>
-                        <option value="Terror"></option>
-                        <option value="Suspense"></option>
-                        <option value="Comédia"></option>
-                        <option value="Comédia Romântica"></option>
-                    </datalist>
-                </div>
+                    <select id="genero" name="genero" required style="width:100%;">
+    <option value="">Selecione um gênero</option>
+    <?php foreach ($generos as $genero): ?>
+        <option value="<?= htmlspecialchars($genero) ?>">
+            <?= htmlspecialchars($genero) ?>
+        </option>
+    <?php endforeach; ?>
+</select>
+
+<!-- CDN do Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    $('#genero').select2({
+        placeholder: "Selecione um gênero",
+        allowClear: true
+    });
+});
+</script>
+
+
                 <div class="input-container">
                     <select name="estado" required>
                         <option value="">Estado</option>
@@ -443,6 +467,15 @@ function validarFormulario() {
     // Se tudo estiver ok, permite o envio do formulário
     return true;
 }
+$(document).ready(function() {
+    $('#genero').select2({
+        placeholder: "Selecione um gênero",
+        allowClear: true
+    });
+});
+
+
 </script>
+
 </body>
 </html>
