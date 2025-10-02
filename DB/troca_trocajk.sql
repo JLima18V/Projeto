@@ -23,6 +23,7 @@ CREATE TABLE livros (
   genero VARCHAR(100),
   estado VARCHAR(50),
   imagens varchar (255),
+  status ENUM('disponivel','indisponivel') DEFAULT 'disponivel',
   id_usuario INT,
   data_publicacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
@@ -64,5 +65,3 @@ CREATE TABLE trocas_livros_oferecidos (
     FOREIGN KEY (id_troca) REFERENCES trocas(id) ON DELETE CASCADE,
     FOREIGN KEY (id_livro_oferecido) REFERENCES livros(id)
 );
-
-
