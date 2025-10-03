@@ -4,7 +4,7 @@ session_start(); // Adicionado para usar a sessão
 // Conexão com o banco de dados
 $servername = "localhost";
 $username = "root";
-$password = "";
+$password = "jk123456";
 $database = "troca_trocaJK";
 
 $conn = new mysqli($servername, $username, $password, $database);
