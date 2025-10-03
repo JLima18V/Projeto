@@ -43,6 +43,16 @@ if (isset($_GET['id_troca'])) {
             echo "<p>⚠️ Sua confirmação foi registrada. A troca será concluída quando o outro usuário confirmar.</p>";
         }
 
+        if ($stmtUpdate->execute()) {
+            // Redirect back with parameter instead of showing message
+            header("Location: minhas_trocas.php?confirmed=true");
+            exit();
+        } else {
+            // Handle error case
+            header("Location: minhas_trocas.php?error=true");
+            exit();
+        }
+
         echo "<a href='minhas_trocas.php'>Voltar</a>";
 
     } else {
