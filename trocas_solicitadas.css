@@ -1,0 +1,271 @@
+/* Reset e estilos básicos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
+
+/* Cabeçalho */
+.header-trocas {
+    background-color: #ecf7e6;
+    display: flex;
+    align-items: center;
+    padding: 15px 30px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.header-trocas h1 {
+    margin-left: 10px;
+    font-size: 24px;
+    color: #5ec57e;
+}
+
+.voltar-icon {
+    width: 24px;
+    cursor: pointer;
+}
+
+/* Container principal */
+.trocas-container {
+    max-width: 800px;
+    margin: 90px auto 30px;
+    padding: 20px;
+}
+
+/* Card de solicitação de troca */
+.troca-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.troca-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Informações do solicitante */
+.solicitante-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.solicitante-foto {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.solicitante-nome {
+    font-weight: bold;
+    color: #333;
+    font-size: 1.1em;
+}
+
+/* Detalhes da troca */
+.troca-detalhes {
+    margin: 15px 0;
+}
+
+.livro-info {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f8f8f8;
+    border-radius: 8px;
+}
+
+.livro-info h3 {
+    color: #5ec57e;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.livro-info ul {
+    list-style: none;
+    padding-left: 15px;
+}
+
+.livro-info li {
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Botões de ação */
+.troca-acoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-aceitar, 
+.btn-recusar {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    flex: 1;
+}
+
+.btn-aceitar {
+    background-color: #5ec57e;
+    color: white;
+}
+
+.btn-aceitar:hover {
+    background-color: #4da86a;
+}
+
+.btn-recusar {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-recusar:hover {
+    background-color: #c0392b;
+}
+
+/* Mensagem quando não há trocas */
+.sem-trocas {
+    text-align: center;
+    padding: 20px;
+    color: #000000;
+}
+
+.sem-trocas h2 {
+    margin-bottom: 15px;
+    color: #000000;
+    font-size: 1em;
+    font-weight: normal;
+}
+
+/* Estilos para o link do usuário */
+.user-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    gap: 15px;
+    transition: transform 0.2s ease;
+}
+
+.user-link:hover {
+    transform: translateY(-2px);
+}
+
+.solicitante-dados {
+    display: flex;
+    flex-direction: column;
+}
+
+.solicitante-usuario {
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* Estilos para os cards de livros */
+.livro-card {
+    display: flex;
+    gap: 15px;
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.livro-imagem {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.livro-imagem-mini {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.livro-dados {
+    flex: 1;
+}
+
+.livro-dados p, .livro-dados-mini p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #333;
+}
+
+.lista-oferecidos {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.livro-oferecido {
+    display: flex;
+    gap: 15px;
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 8px;
+    align-items: center;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 600px) {
+    .trocas-container {
+        padding: 15px;
+    }
+
+    .troca-acoes {
+        flex-direction: column;
+    }
+
+    .btn-aceitar, 
+    .btn-recusar {
+        width: 100%;
+    }
+
+    .header-trocas h1 {
+        font-size: 20px;
+    }
+
+    .livro-card, .livro-oferecido {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .livro-imagem {
+        width: 80px;
+        height: 80px;
+    }
+
+    .livro-imagem-mini {
+        width: 60px;
+        height: 60px;
+    }
+}

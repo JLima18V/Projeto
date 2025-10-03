@@ -1,7 +1,9 @@
 <?php
     session_start();
     include 'conexao.php';
+    include 'generos.php';
 
+    
     // Recuperar dados do usuário
     $sql = "SELECT email,instagram, whatsapp,  nome, sobrenome, nome_usuario, foto_perfil FROM usuarios WHERE id = ?";
     $stmt = $conn->prepare($sql);
@@ -133,6 +135,13 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
         <style>
       
         </style>
+
+        <!-- jQuery (necessário pro Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- CSS e JS do Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     </head>
     <body>
         <!-- Cabeçalho -->
@@ -150,21 +159,12 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
                 <img src="imagens/icone-mensagem.svg" alt="Trocas Solicitadas" onclick="window.location.href='trocas_solicitadas.php'">
                 
                 <!-- Ícone de perfil com dropdown -->
-                <div class="profile-dropdown">
-                    <div class="foto-perfil-container" onclick="abrirFotoPerfilPopup()">
-                        <img src="<?= $usuario['foto_perfil'] ? 'imagens/perfis/' . $usuario['foto_perfil'] : 'imagens/icone-perfil.svg' ?>" 
-                             alt="Perfil" 
-                             class="perfil-icon" 
-                             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-                        <div class="foto-perfil-overlay">
-                            <span><?= $usuario['foto_perfil'] ? 'Alterar foto' : 'Adicionar foto' ?></span>
-                        </div>
-                    </div>
-                    <div class="profile-dropdown-content">
-                        <a href="editar_perfil.php">Editar Perfil</a>
-                        <a href="confirmar_saida.html">Sair da Conta</a>
-                        <a href="minhas_trocas.php  ">Minhas Trocas</a>
-                    </div>
+                <div class="profile-trigger">
+                    <img src="<?= $usuario['foto_perfil'] ? 'imagens/perfis/' . $usuario['foto_perfil'] : 'imagens/icone-perfil.svg' ?>" 
+                         alt="Perfil" 
+                         class="perfil-icon" 
+                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                         onclick="toggleSidebar()">
                 </div>
             </div>
         </header>
@@ -232,17 +232,14 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
                         <input type="text" name="autor" id="autor_edit" placeholder="Autor" required />
                     </div>
                     <div class="input-container">
-                        <input list="genero_edit" name="genero" id="genero_edit" placeholder="Gênero" required />
-                        <datalist id="genero_edit">
-                            <option value="Romance"></option>
-                            <option value="Terror"></option>
-                            <option value="Suspense"></option>
-                            <option value="Ficção Científica"></option>
-                            <option value="Biografia"></option>
-                            <option value="Drama"></option>
-                            <option value="Aventura"></option>
-                            <option value="Outros"></option>
-                        </datalist>
+                        <select id="genero_edit" name="genero" required style="width:100%;">
+                            <option value="">Selecione um gênero</option>
+                            <?php foreach ($generos as $genero): ?>
+                                <option value="<?= htmlspecialchars($genero) ?>">
+                                    <?= htmlspecialchars($genero) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="input-container">
                         <select name="estado" id="estado_edit" required>
@@ -308,6 +305,7 @@ $idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_de
         <?php if ($modoTroca): ?>
             <form action="processa_troca.php" method="POST">
                 <input type="hidden" name="id_livro_solicitado" value="<?= $idLivroDesejado ?>">
+                <p class="instrucao-troca">Selecione o(s) livro(s) que deseja oferecer:</p>
         <?php endif; ?>
 
         <div>
@@ -322,60 +320,57 @@ $idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_de
 
                     <div class="livro-info">
                         <?php if ($modoTroca): ?>
-                            <label>
+                            <label class="checkbox-troca">
                                 <input type="checkbox" name="livros_oferecidos[]" value="<?= $livro['id'] ?>">
                                 <strong><?= htmlspecialchars($livro['titulo']) ?></strong>
-                            </label><br>
+                            </label>
                         <?php else: ?>
-                            <strong><?= htmlspecialchars($livro['titulo']) ?></strong><br>
+                            <strong><?= htmlspecialchars($livro['titulo']) ?></strong>
                         <?php endif; ?>
-
+                        <br>
                         Autor: <?= htmlspecialchars($livro['autor']) ?><br>
                         Gênero: <?= htmlspecialchars($livro['genero']) ?><br>
                         Estado: <?= htmlspecialchars($livro['estado']) ?><br>
-                        Publicado em: <?= date("d/m/Y", strtotime($livro['data_publicacao'])) ?>
+                        Publicado em: <?= date("d/m/Y", strtotime($livro['data_publicacao'])) ?><br>
+                        Status: <?= htmlspecialchars($livro['status']) ?>
+
+                        <?php if (!$modoTroca): ?>
+                        <div class="livro-acoes">
+                            <!-- Botão Editar -->
+                            <button onclick="abrirPopupEdicao(event, 
+                                <?= $livro['id'] ?>, 
+                                '<?= htmlspecialchars(addslashes($livro['titulo'])) ?>', 
+                                '<?= htmlspecialchars(addslashes($livro['autor'])) ?>', 
+                                '<?= htmlspecialchars(addslashes($livro['genero'])) ?>', 
+                                '<?= htmlspecialchars(addslashes($livro['estado'])) ?>', 
+                                '<?= htmlspecialchars(addslashes($livro['imagens'])) ?>')" 
+                                class="btn-action btn-editar">
+                                Editar
+                            </button>
+
+                            <!-- Botão Alternar Disponibilidade -->
+                            <form method="POST" style="display: inline;">
+                                <input type="hidden" name="toggle_status_livro" value="1">
+                                <input type="hidden" name="livro_id" value="<?= $livro['id'] ?>">
+                                <input type="hidden" name="status" value="<?= $livro['status'] === 'disponivel' ? 'indisponivel' : 'disponivel' ?>">
+                                <button type="submit" class="btn-action <?= $livro['status'] === 'disponivel' ? 'btn-indisponivel' : 'btn-disponivel' ?>">
+                                    <?= $livro['status'] === 'disponivel' ? 'Marcar Indisponível' : 'Marcar Disponível' ?>
+                                </button>
+                            </form>
+                        </div>
+                        <?php endif; ?>
                     </div>
-
-                    <?php if (!$modoTroca): ?>
-    <div class="livro-actions">
-        <button type="button" class="btn-action btn-editar"
-            onclick="abrirPopupEdicao(event, <?= $livro['id'] ?>, '<?= htmlspecialchars($livro['titulo']) ?>', '<?= htmlspecialchars($livro['autor']) ?>', '<?= htmlspecialchars($livro['genero']) ?>', '<?= htmlspecialchars($livro['estado']) ?>', '<?= htmlspecialchars($livro['imagens']) ?>')">
-            Editar
-        </button>
-
-     
-
-        <!-- Checkbox toggle -->
-        <form method="POST" style="display:inline;">
-            <input type="hidden" name="toggle_status_livro" value="1">
-            <input type="hidden" name="livro_id" value="<?= $livro['id'] ?>">
-            <input type="hidden" name="status" value="indisponivel">
-            <label>
-                <input type="checkbox" name="status" value="disponivel"
-                    onchange="this.form.submit()" <?= $livro['status'] === 'disponivel' ? 'checked' : '' ?>>
-                Disponível
-            </label>
-        </form>
-    </div>
-<?php endif; ?>
-
                 </div>
             <?php endwhile; ?>
         </div>
 
         <?php if ($modoTroca): ?>
-            Selecione o(s) livro(s) que deseja oferecer
             <button type="submit" class="postar" style="margin-top:15px;">Enviar Solicitação de Troca</button>
             </form>
         <?php endif; ?>
     <?php else: ?>
         <p>Você ainda não publicou nenhum livro.</p>
     <?php endif; ?>
-<?php
-if (isset($_GET['status']) && $_GET['status'] == 'sucesso') {
-    echo "<p style='color: green;'>Solicitação de troca enviada com sucesso!</p>";
-}
-?>
 </div>
 
 
@@ -480,6 +475,12 @@ if (isset($_GET['status']) && $_GET['status'] == 'sucesso') {
                         reader.readAsDataURL(file);
                     });
                 };
+
+                // Initialize Select2
+                $('#genero_edit').select2({
+                    placeholder: "Selecione um gênero",
+                    allowClear: true
+                });
             }
 
             function fecharPopupEdicao() {
@@ -500,5 +501,74 @@ if (isset($_GET['status']) && $_GET['status'] == 'sucesso') {
                 document.getElementById("popupOverlay").style.display = "none";
             }
         </script>   
+
+        <script>
+// Adiciona interatividade aos itens de seleção de livro
+document.addEventListener('DOMContentLoaded', function() {
+    const livroItems = document.querySelectorAll('.livro-item');
+    
+    livroItems.forEach(item => {
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+            // Adiciona classe para estilização
+            item.classList.add('selecao-troca');
+            
+            // Atualiza visual quando checkbox é alterado
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    item.classList.add('selecionado');
+                } else {
+                    item.classList.remove('selecionado');
+                }
+            });
+
+            // Permite clicar no card inteiro para selecionar
+            item.addEventListener('click', function(e) {
+                if (e.target !== checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+    });
+});
+</script>
+
+<?php if(isset($_SESSION['mensagem'])): ?>
+    <div class="mensagem-sucesso">
+        <?php 
+        echo $_SESSION['mensagem'];
+        unset($_SESSION['mensagem']); 
+        ?>
+    </div>
+<?php endif; ?>
+
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div class="sidebar-menu">
+    <button class="close-sidebar" onclick="toggleSidebar()">×</button>
+    <div class="sidebar-header">
+        <img src="<?= $usuario['foto_perfil'] ? 'imagens/perfis/' . $usuario['foto_perfil'] : 'imagens/icone-perfil.svg' ?>" 
+             alt="Perfil">
+        <div class="sidebar-header-info">
+            <h3><?= htmlspecialchars($_SESSION['nome'] . ' ' . $_SESSION['sobrenome']) ?></h3>
+            <p>@<?= htmlspecialchars($_SESSION['nome_usuario']) ?></p>
+        </div>
+    </div>
+    <ul class="sidebar-menu-items">
+        <li><a href="editar_perfil.php"><img src="imagens/icone-editar.svg" alt="">Editar Perfil</a></li>
+        <li><a href="minhas_trocas.php"><img src="imagens/icone-troca.svg" alt="">Minhas Trocas</a></li>
+        <li><a href="#" onclick="abrirFotoPerfilPopup()"><img src="imagens/icone-foto.svg" alt="">Alterar Foto</a></li>
+        <li><a href="confirmar_saida.html"><img src="imagens/icone-sair.svg" alt="">Sair da Conta</a></li>
+    </ul>
+</div>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar-menu');
+    const overlay = document.querySelector('.sidebar-overlay');
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
+</script>
     </body>
     </html>

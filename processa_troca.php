@@ -68,11 +68,10 @@ if ($stmt->execute()) {
         $stmt_oferecido->close();
     }
 
-    
-    // Redireciona de volta para a homepage ou perfil
-    // Depois de executar a troca com sucesso
-header("Location: perfil.php?status=sucesso");
-exit();
+    // After trade is processed successfully
+    $_SESSION['mensagem'] = "Troca solicitada com sucesso!";
+    header('Location: perfil.php');
+    exit;
 
 } else {
     echo "Erro ao enviar solicitação: " . $stmt->error;
