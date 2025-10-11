@@ -80,8 +80,8 @@ if (isset($_SESSION['id'])) {
         <div class="search-container">
     <form method="POST" action="homepage.php" style="display: flex; align-items: center;">
         <input type="text" name="q" class="search-bar" placeholder="Pesquise livros" value="<?php echo htmlspecialchars($termoPesquisa); ?>">
-        <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;">
-            <img src="imagens/icone-filtro.svg" alt="Pesquisar" class="filter-icon">
+        <!-- <button type="submit" style="background: none; border: none; padding: 0; cursor: pointer;"> -->
+            <img src="imagens/icone-filtro.svg" alt="Pesquisar" class="filter-icon" onclick="toggleFilter()">
         </button>
     </form>
 </div>
@@ -108,13 +108,23 @@ if (isset($_SESSION['id'])) {
                 return 'uploads/' . $img; 
             }, $imagens));
 
-            echo '<div class="card-livro" data-imagens=\'' . $imagensJson . '\'>';
-                echo '<div class="card-header">';
-                    echo '<div class="header-usuario">';
-                        echo '<img src="' . $foto_perfil . '" class="perfil-icon" alt="Perfil">';
-                        echo '<a class="user" href="perfil_usuario.php?id=' . $livro['id_dono'] . '">' . $usuario . '</a>';
-                    echo '</div>';
-                echo '</div>';
+          echo '<div class="card-livro" data-imagens=\'' . $imagensJson . '\'>';
+    echo '<div class="card-header">';
+        echo '<div class="header-usuario">';
+
+        // Verifica se é o próprio usuário logado
+        if ($livro['id_dono'] == $_SESSION['id']) {
+            $linkPerfil = 'perfil.php';
+        } else {
+            $linkPerfil = 'perfil_usuario.php?id=' . $livro['id_dono'];
+        }
+
+        echo '<img src="' . $foto_perfil . '" class="perfil-icon" alt="Perfil">';
+        echo '<a class="user" href="' . $linkPerfil . '">' . $usuario . '</a>';
+
+        echo '</div>';
+    echo '</div>';
+
                 
                 echo '<div class="imagem-container">';
                     echo '<img src="uploads/' . htmlspecialchars($primeiraImagem) . '" class="imagem-livro" alt="Capa do Livro">';
@@ -199,6 +209,10 @@ if (isset($_SESSION['id'])) {
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+    function toggleFilter() {
+                const filterContainer = document.getElementById('filterContainer');
+                filterContainer.style.display = filterContainer.style.display === 'none' ? 'block' : 'none';
+            }
 document.addEventListener("DOMContentLoaded", function() {
     $('#genero').select2({
         placeholder: "Selecione um gênero",

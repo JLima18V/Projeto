@@ -37,12 +37,16 @@ if ($result->num_rows > 0) {
 $stmt_receptor->close();
 
 // 2️⃣ Inserir a solicitação na tabela 'trocas'
-$sql = "INSERT INTO trocas (id_solicitante, id_receptor, id_livro_solicitado, status) 
-        VALUES (?, ?, ?, 'pendente')";
+$sql = "INSERT INTO trocas (id_solicitante, id_receptor, id_livro_solicitado, status, data_solicitacao) 
+        VALUES (?, ?, ?, 'pendente', NOW())";
+
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("iii", $id_usuario, $id_receptor, $id_livro_solicitado);
 
+
 if ($stmt->execute()) {
+    
+
     $id_troca = $conn->insert_id; // pega o ID da troca recém-criada
 
     // 3️⃣ Inserir os livros oferecidos na tabela 'trocas_livros_oferecidos' de forma otimizada
@@ -61,12 +65,15 @@ if ($stmt->execute()) {
         $sql_oferecidos = "INSERT INTO trocas_livros_oferecidos (id_troca, id_livro_oferecido) 
                            VALUES " . implode(", ", $values);
         $stmt_oferecido = $conn->prepare($sql_oferecidos);
+        include 'enviar_email_interesse.php';
+        
         
         // Usando call_user_func_array para bind_param dinâmico
         $stmt_oferecido->bind_param($types, ...$params);
         $stmt_oferecido->execute();
         $stmt_oferecido->close();
     }
+        include 'enviar_email_interesse.php';
 
     // After trade is processed successfully
     $_SESSION['mensagem'] = "Troca solicitada com sucesso!";

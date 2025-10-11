@@ -52,6 +52,7 @@ CREATE TABLE trocas (
     confirm_solicitante TINYINT(1) DEFAULT 0,
     confirm_receptor TINYINT(1) DEFAULT 0,
     status ENUM('pendente', 'aceita', 'recusada', 'concluída') DEFAULT 'pendente',
+    data_status DATETIME NULL,
     data_solicitacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_solicitante) REFERENCES usuarios(id),
     FOREIGN KEY (id_receptor) REFERENCES usuarios(id),
@@ -65,3 +66,24 @@ CREATE TABLE trocas_livros_oferecidos (
     FOREIGN KEY (id_troca) REFERENCES trocas(id) ON DELETE CASCADE,
     FOREIGN KEY (id_livro_oferecido) REFERENCES livros(id)
 );
+
+CREATE TABLE avaliacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_troca INT NOT NULL,
+    id_avaliador INT NOT NULL,
+    id_avaliado INT NOT NULL,
+    nota INT CHECK (nota BETWEEN 1 AND 5),
+    comentario TEXT,
+    data_avaliacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_troca) REFERENCES trocas(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_avaliador) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_avaliado) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE avaliacoes_imagens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_avaliacao INT NOT NULL,
+    caminho_imagem VARCHAR(255) NOT NULL,
+    FOREIGN KEY (id_avaliacao) REFERENCES avaliacoes(id) ON DELETE CASCADE
+);
+

@@ -529,3 +529,7 @@ img[src*="perfis/"] {
     border-radius: 50%;
     object-fit: cover;
 }
+
+.social-link{
+    text-decoration: none;
+}

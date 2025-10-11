@@ -201,3 +201,31 @@ body {
 .toast-notification .icon {
     font-size: 20px;
 }
+
+.avaliacao-container {
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.estrelas input {
+  display: none;
+}
+
+.estrelas label {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.estrelas input:checked ~ label {
+  color: gold;
+}
+
+.btn-avaliar {
+  background: #5c8df7;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}

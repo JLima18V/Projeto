@@ -104,6 +104,9 @@ body {
     gap: 8px;
     margin-top: 10px;
 }
+.social-link{
+    text-decoration: none;
+}
 
 /* Livros publicados */
 .livros-publicados {

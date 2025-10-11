@@ -1,3 +1,4 @@
+
 <?php
     session_start();
     include 'conexao.php';
@@ -52,13 +53,76 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
     $stmt_check->close();
 }
 
+    // Parâmetros de busca e filtro
+    $busca = isset($_GET['busca']) ? trim($_GET['busca']) : '';
+    $genero_filtro = isset($_GET['genero']) ? $_GET['genero'] : '';
+    $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : '';
+    $status_filtro = isset($_GET['status']) ? $_GET['status'] : '';
+    $ordenar_por = isset($_GET['ordenar']) ? $_GET['ordenar'] : 'data_publicacao_desc';
 
+    // Construir query base para livros
+    $sql_livros = "SELECT id, titulo, autor, data_publicacao, imagens, genero, estado, status FROM livros WHERE id_usuario = ?";
+    $params = array($_SESSION['id']);
+    $types = "i";
 
-    // Recupera os livros publicados pelo usuário
-    $sql_livros = "SELECT id, titulo, autor, data_publicacao, imagens, genero, estado, status FROM livros WHERE id_usuario = ? ORDER BY data_publicacao DESC";
+    // Aplicar filtros
+    if (!empty($busca)) {
+        $sql_livros .= " AND (titulo LIKE ? OR autor LIKE ?)";
+        $params[] = "%$busca%";
+        $params[] = "%$busca%";
+        $types .= "ss";
+    }
 
+    if (!empty($genero_filtro)) {
+        $sql_livros .= " AND genero = ?";
+        $params[] = $genero_filtro;
+        $types .= "s";
+    }
+
+    if (!empty($estado_filtro)) {
+        $sql_livros .= " AND estado = ?";
+        $params[] = $estado_filtro;
+        $types .= "s";
+    }
+
+    if (!empty($status_filtro)) {
+        $sql_livros .= " AND status = ?";
+        $params[] = $status_filtro;
+        $types .= "s";
+    }
+
+    // Aplicar ordenação
+    switch ($ordenar_por) {
+        case 'titulo_asc':
+            $sql_livros .= " ORDER BY titulo ASC";
+            break;
+        case 'titulo_desc':
+            $sql_livros .= " ORDER BY titulo DESC";
+            break;
+        case 'autor_asc':
+            $sql_livros .= " ORDER BY autor ASC";
+            break;
+        case 'autor_desc':
+            $sql_livros .= " ORDER BY autor DESC";
+            break;
+        case 'data_publicacao_asc':
+            $sql_livros .= " ORDER BY data_publicacao ASC";
+            break;
+        case 'data_publicacao_desc':
+        default:
+            $sql_livros .= " ORDER BY data_publicacao DESC";
+            break;
+    }
+
+    // Executar query
     $stmt_livros = $conn->prepare($sql_livros);
-    $stmt_livros->bind_param("i", $_SESSION['id']);
+    
+    if (count($params) > 1) {
+        $stmt_livros->bind_param($types, ...$params);
+    } else {
+        $stmt_livros->bind_param($types, $_SESSION['id']);
+    }
+    
     $stmt_livros->execute();
     $result_livros = $stmt_livros->get_result();
     $stmt_livros->close();
@@ -131,9 +195,85 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
         <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="perfil.css">
         <link rel="icon" href="imagens/favicon.ico" type="image/x-icon">
+        
         <title>Perfil</title>
         <style>
-      
+        .filter-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: end;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 45px;
+            font-weight: bold;
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn-filter {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-apply {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-apply:hover {
+            background: #0056b3;
+        }
+        
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            background: #545b62;
+        }
+        
+        .search-results-info {
+            margin-bottom: 15px;
+            color: #6c757d;
+            font-style: italic;
+        }
         </style>
 
         <!-- jQuery (necessário pro Select2) -->
@@ -150,11 +290,16 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
                 <img src="imagens/logo-trocatrocajk.png" alt="Logo" class="logo">
             </a>
             <div class="search-container">
-                <input type="text" class="search-bar" placeholder="Pesquise livros">
+                <form id="searchForm" method="GET" action="perfil.php" style="display: flex; align-items: center; width: 100%;">
+                    <input type="text" class="search-bar" name="busca" placeholder="Pesquise seus livros..." value="<?= htmlspecialchars($busca) ?>">
+                    <button type="submit" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
+                        <!-- <img src="imagens/icone-lupa.svg" alt="Buscar" style="width: 20px; height: 20px;"> -->
+                    </button>
+                </form>
                 <img src="imagens/icone-filtro.svg" alt="Filtrar" class="filter-icon" onclick="toggleFilter()">
             </div>
             <div class="icons">
-                <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()">
+                <!-- <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()"> -->
                 <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.php'">
                 <img src="imagens/icone-mensagem.svg" alt="Trocas Solicitadas" onclick="window.location.href='trocas_solicitadas.php'">
                 
@@ -168,6 +313,63 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
                 </div>
             </div>
         </header>
+
+        <!-- Container de Filtros -->
+        <div id="filterContainer" class="filter-container" style="display: none;">
+            <form id="filterForm" method="GET" action="perfil.php">
+                <input type="hidden" name="busca" value="<?= htmlspecialchars($busca) ?>">
+                
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="genero">Gênero</label>
+                        <select id="genero" name="genero">
+                            <option value="">Todos os gêneros</option>
+                            <?php foreach ($generos as $genero): ?>
+                                <option value="<?= htmlspecialchars($genero) ?>" <?= $genero_filtro === $genero ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($genero) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="estado">Estado</label>
+                        <select id="estado" name="estado">
+                            <option value="">Todos os estados</option>
+                            <option value="Novo" <?= $estado_filtro === 'Novo' ? 'selected' : '' ?>>Novo</option>
+                            <option value="Seminovo" <?= $estado_filtro === 'Seminovo' ? 'selected' : '' ?>>Seminovo</option>
+                            <option value="Usado" <?= $estado_filtro === 'Usado' ? 'selected' : '' ?>>Usado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="status">Status</label>
+                        <select id="status" name="status">
+                            <option value="">Todos os status</option>
+                            <option value="disponivel" <?= $status_filtro === 'disponivel' ? 'selected' : '' ?>>Disponível</option>
+                            <option value="indisponivel" <?= $status_filtro === 'indisponivel' ? 'selected' : '' ?>>Indisponível</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="ordenar">Ordenar por</label>
+                        <select id="ordenar" name="ordenar">
+                            <option value="data_publicacao_desc" <?= $ordenar_por === 'data_publicacao_desc' ? 'selected' : '' ?>>Data (Mais Recente)</option>
+                            <option value="data_publicacao_asc" <?= $ordenar_por === 'data_publicacao_asc' ? 'selected' : '' ?>>Data (Mais Antiga)</option>
+                            <option value="titulo_asc" <?= $ordenar_por === 'titulo_asc' ? 'selected' : '' ?>>Título (A-Z)</option>
+                            <option value="titulo_desc" <?= $ordenar_por === 'titulo_desc' ? 'selected' : '' ?>>Título (Z-A)</option>
+                            <option value="autor_asc" <?= $ordenar_por === 'autor_asc' ? 'selected' : '' ?>>Autor (A-Z)</option>
+                            <option value="autor_desc" <?= $ordenar_por === 'autor_desc' ? 'selected' : '' ?>>Autor (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter btn-apply">Aplicar Filtros</button>
+                    <button type="button" class="btn-filter btn-clear" onclick="clearFilters()">Limpar Filtros</button>
+                </div>
+            </form>
+        </div>
 
         <!-- Popup para gerenciar foto de perfil -->
         <div id="fotoPerfilPopup">
@@ -272,6 +474,33 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
                     </h2>
 
                     <p>@<?= isset($_SESSION['nome_usuario']) ? htmlspecialchars($_SESSION['nome_usuario']) : 'Usuário não definido' ?></p>
+                       <?php
+                    // Média de avaliações e quantidade
+                    $id_logado = $_SESSION['id'];
+
+                    $sql_avaliacoes = "
+                        SELECT 
+                            ROUND(AVG(nota), 1) AS media_avaliacao,
+                            COUNT(nota) AS total_avaliacoes
+                        FROM avaliacoes
+                        WHERE id_avaliado = ?
+                    ";
+                    $stmt = $conn->prepare($sql_avaliacoes);
+                    $stmt->bind_param("i", $id_logado);
+                    $stmt->execute();
+                    $result_avaliacao = $stmt->get_result();
+                    $avaliacao = $result_avaliacao->fetch_assoc();
+                    $stmt->close();
+
+                    $media = $avaliacao['media_avaliacao'] ?? 0;
+                    $total = $avaliacao['total_avaliacoes'] ?? 0;
+
+                    ?>
+
+                    <p style="margin-top: 5px; font-size: 16px; color: #555;">
+                        ⭐ <?= number_format($media, 1, ',', '.') ?> / 5 
+                        (<?= $total ?> <?= $total == 1 ? 'avaliação' : 'avaliações' ?>)
+                    </p>
                     <div class="perfil-social-links">
                         <?php if (!empty($usuario['instagram'])): ?>
                             <a href="https://instagram.com/<?= htmlspecialchars($usuario['instagram']) ?>" target="_blank" class="social-link">
@@ -300,6 +529,21 @@ $idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_de
 
 <div class="livros-publicados">
     <h3>Livros Publicados</h3>
+
+    <!-- Informações sobre resultados -->
+    <?php if ($busca || $genero_filtro || $estado_filtro || $status_filtro): ?>
+        <div class="search-results-info">
+            <?php
+            $filtros_ativos = [];
+            if ($busca) $filtros_ativos[] = "busca: \"$busca\"";
+            if ($genero_filtro) $filtros_ativos[] = "gênero: $genero_filtro";
+            if ($estado_filtro) $filtros_ativos[] = "estado: $estado_filtro";
+            if ($status_filtro) $filtros_ativos[] = "status: " . ($status_filtro === 'disponivel' ? 'disponível' : 'indisponível');
+            
+            echo "Filtros ativos: " . implode(', ', $filtros_ativos);
+            ?>
+        </div>
+    <?php endif; ?>
 
     <?php if ($result_livros->num_rows > 0): ?>
         <?php if ($modoTroca): ?>
@@ -332,7 +576,7 @@ $idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_de
                         Gênero: <?= htmlspecialchars($livro['genero']) ?><br>
                         Estado: <?= htmlspecialchars($livro['estado']) ?><br>
                         Publicado em: <?= date("d/m/Y", strtotime($livro['data_publicacao'])) ?><br>
-                        Status: <?= htmlspecialchars($livro['status']) ?>
+                        Status: <span class="status-<?= $livro['status'] ?>"><?= htmlspecialchars($livro['status']) ?></span>
 
                         <?php if (!$modoTroca): ?>
                         <div class="livro-acoes">
@@ -369,7 +613,10 @@ $idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_de
             </form>
         <?php endif; ?>
     <?php else: ?>
-        <p>Você ainda não publicou nenhum livro.</p>
+        <p>Nenhum livro encontrado com os filtros aplicados.</p>
+        <?php if ($busca || $genero_filtro || $estado_filtro || $status_filtro): ?>
+            <a href="perfil.php" class="btn-filter btn-clear">Limpar filtros</a>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 
@@ -492,6 +739,21 @@ $idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_de
                 if(e.target === this) fecharPopupEdicao();
             });
 
+            // Funções para filtros
+            function toggleFilter() {
+                const filterContainer = document.getElementById('filterContainer');
+                filterContainer.style.display = filterContainer.style.display === 'none' ? 'block' : 'none';
+            }
+
+            function clearFilters() {
+                window.location.href = 'perfil.php';
+            }
+
+            // Busca em tempo real (opcional)
+            document.getElementById('searchForm').addEventListener('submit', function(e) {
+                // Permite que o formulário seja submetido normalmente
+            });
+
             // Restante dos scripts permanece igual
             function abrirPopup() {
                 document.getElementById("popupOverlay").style.display = "flex";
@@ -524,14 +786,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Permite clicar no card inteiro para selecionar
             item.addEventListener('click', function(e) {
-                if (e.target !== checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    checkbox.dispatchEvent(new Event('change'));
+                if (e.target !== checkbox && !checkbox.checked) {
+                    checkbox.checked = true;
+                    item.classList.add('selecionado');
                 }
             });
         }
     });
 });
+
 </script>
 
 <?php if(isset($_SESSION['mensagem'])): ?>
@@ -552,6 +815,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="sidebar-header-info">
             <h3><?= htmlspecialchars($_SESSION['nome'] . ' ' . $_SESSION['sobrenome']) ?></h3>
             <p>@<?= htmlspecialchars($_SESSION['nome_usuario']) ?></p>
+         
+
         </div>
     </div>
     <ul class="sidebar-menu-items">
@@ -559,6 +824,12 @@ document.addEventListener('DOMContentLoaded', function() {
         <li><a href="minhas_trocas.php"><img src="imagens/icone-troca.svg" alt="">Minhas Trocas</a></li>
         <li><a href="#" onclick="abrirFotoPerfilPopup()"><img src="imagens/icone-foto.svg" alt="">Alterar Foto</a></li>
         <li><a href="confirmar_saida.html"><img src="imagens/icone-sair.svg" alt="">Sair da Conta</a></li>
+        <!-- Inclua a biblioteca de ícones Bootstrap Icons no <head> do seu HTML -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<!-- Ícone de sair (logout) -->
+<i class="bi bi-box-arrow-right"></i> Sair
+
     </ul>
 </div>
 
