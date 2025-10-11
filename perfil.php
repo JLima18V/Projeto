@@ -291,7 +291,7 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
             </a>
             <div class="search-container">
                 <form id="searchForm" method="GET" action="perfil.php" style="display: flex; align-items: center; width: 100%;">
-                    <input type="text" class="search-bar" name="busca" placeholder="Pesquise seus livros..." value="<?= htmlspecialchars($busca) ?>">
+                    <input type="text" class="search-bar" name="busca" placeholder="Pesquise seus livros" value="<?= htmlspecialchars($busca) ?>">
                     <button type="submit" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
                         <!-- <img src="imagens/icone-lupa.svg" alt="Buscar" style="width: 20px; height: 20px;"> -->
                     </button>
@@ -820,16 +820,9 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
     <ul class="sidebar-menu-items">
-        <li><a href="editar_perfil.php"><img src="imagens/icone-editar.svg" alt="">Editar Perfil</a></li>
-        <li><a href="minhas_trocas.php"><img src="imagens/icone-troca.svg" alt="">Minhas Trocas</a></li>
-        <li><a href="#" onclick="abrirFotoPerfilPopup()"><img src="imagens/icone-foto.svg" alt="">Alterar Foto</a></li>
-        <li><a href="confirmar_saida.html"><img src="imagens/icone-sair.svg" alt="">Sair da Conta</a></li>
-        <!-- Inclua a biblioteca de ícones Bootstrap Icons no <head> do seu HTML -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-<!-- Ícone de sair (logout) -->
-<i class="bi bi-box-arrow-right"></i> Sair
-
+        <li><a href="editar_perfil.php"><img src="imagens/gear-fill.svg" alt="">Configurações</a></li>
+        <li><a href="minhas_trocas.php"><img src="imagens/arrow-left-right.svg" alt="">Minhas Trocas</a></li>
+        <li><a href="confirmar_saida.html"><img src="imagens/box-arrow-right.svg" alt="">Sair da Conta</a></li>
     </ul>
 </div>
 
