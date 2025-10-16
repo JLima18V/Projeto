@@ -195,6 +195,7 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
         <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="perfil.css">
         <link rel="icon" href="imagens/favicon.ico" type="image/x-icon">
+        
         <title>Perfil</title>
         <style>
         .filter-container {
@@ -290,7 +291,7 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
             </a>
             <div class="search-container">
                 <form id="searchForm" method="GET" action="perfil.php" style="display: flex; align-items: center; width: 100%;">
-                    <input type="text" class="search-bar" name="busca" placeholder="Pesquise seus livros..." value="<?= htmlspecialchars($busca) ?>">
+                    <input type="text" class="search-bar" name="busca" placeholder="Pesquise seus livros" value="<?= htmlspecialchars($busca) ?>">
                     <button type="submit" style="background: none; border: none; cursor: pointer; margin-left: 5px;">
                         <!-- <img src="imagens/icone-lupa.svg" alt="Buscar" style="width: 20px; height: 20px;"> -->
                     </button>
@@ -298,7 +299,7 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
                 <img src="imagens/icone-filtro.svg" alt="Filtrar" class="filter-icon" onclick="toggleFilter()">
             </div>
             <div class="icons">
-                <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()">
+                <!-- <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()"> -->
                 <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.php'">
                 <img src="imagens/icone-mensagem.svg" alt="Trocas Solicitadas" onclick="window.location.href='trocas_solicitadas.php'">
                 
@@ -473,6 +474,33 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
                     </h2>
 
                     <p>@<?= isset($_SESSION['nome_usuario']) ? htmlspecialchars($_SESSION['nome_usuario']) : 'Usuário não definido' ?></p>
+                       <?php
+                    // Média de avaliações e quantidade
+                    $id_logado = $_SESSION['id'];
+
+                    $sql_avaliacoes = "
+                        SELECT 
+                            ROUND(AVG(nota), 1) AS media_avaliacao,
+                            COUNT(nota) AS total_avaliacoes
+                        FROM avaliacoes
+                        WHERE id_avaliado = ?
+                    ";
+                    $stmt = $conn->prepare($sql_avaliacoes);
+                    $stmt->bind_param("i", $id_logado);
+                    $stmt->execute();
+                    $result_avaliacao = $stmt->get_result();
+                    $avaliacao = $result_avaliacao->fetch_assoc();
+                    $stmt->close();
+
+                    $media = $avaliacao['media_avaliacao'] ?? 0;
+                    $total = $avaliacao['total_avaliacoes'] ?? 0;
+
+                    ?>
+
+                    <p style="margin-top: 5px; font-size: 16px; color: #555;">
+                        ⭐ <?= number_format($media, 1, ',', '.') ?> / 5 
+                        (<?= $total ?> <?= $total == 1 ? 'avaliação' : 'avaliações' ?>)
+                    </p>
                     <div class="perfil-social-links">
                         <?php if (!empty($usuario['instagram'])): ?>
                             <a href="https://instagram.com/<?= htmlspecialchars($usuario['instagram']) ?>" target="_blank" class="social-link">
@@ -766,6 +794,45 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+</script>
+
+<?php if(isset($_SESSION['mensagem'])): ?>
+    <div class="mensagem-sucesso">
+        <?php 
+        echo $_SESSION['mensagem'];
+        unset($_SESSION['mensagem']); 
+        ?>
+    </div>
+<?php endif; ?>
+
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div class="sidebar-menu">
+    <button class="close-sidebar" onclick="toggleSidebar()">×</button>
+    <div class="sidebar-header">
+        <img src="<?= $usuario['foto_perfil'] ? 'imagens/perfis/' . $usuario['foto_perfil'] : 'imagens/icone-perfil.svg' ?>" 
+             alt="Perfil">
+        <div class="sidebar-header-info">
+            <h3><?= htmlspecialchars($_SESSION['nome'] . ' ' . $_SESSION['sobrenome']) ?></h3>
+            <p>@<?= htmlspecialchars($_SESSION['nome_usuario']) ?></p>
+         
+
+        </div>
+    </div>
+    <ul class="sidebar-menu-items">
+        <li><a href="editar_perfil.php"><img src="imagens/gear-fill.svg" alt="">Configurações</a></li>
+        <li><a href="minhas_trocas.php"><img src="imagens/arrow-left-right.svg" alt="">Minhas Trocas</a></li>
+        <li><a href="confirmar_saida.html"><img src="imagens/box-arrow-right.svg" alt="">Sair da Conta</a></li>
+    </ul>
+</div>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar-menu');
+    const overlay = document.querySelector('.sidebar-overlay');
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
 </script>
     </body>
     </html>
