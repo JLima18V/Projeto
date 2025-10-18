@@ -10,6 +10,7 @@
 <?php
 session_start();
 include 'conexao.php';
+include 'verifica_login.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST["id"];

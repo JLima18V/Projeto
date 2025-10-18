@@ -1,10 +1,7 @@
 <?php
 include 'conexao.php';
 
-if (!isset($_GET['id'])) {
-    echo "ID do usuário não informado.";
-    exit;
-}
+
 
 $id_usuario = intval($_GET['id']);
 

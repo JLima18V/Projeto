@@ -1,5 +1,6 @@
 <?php
 session_start(); // Adicionado para usar a sessão
+include 'verifica_login.php';
 
 // Conexão com o banco de dados
 $servername = "localhost";

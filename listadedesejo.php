@@ -1,12 +1,10 @@
 <?php
 session_start();
 include 'conexao.php';
+include  'verifica_login.php';
 
-// Verifica se o usuário está logado
-if (!isset($_SESSION['id'])) {
-    header("Location: login.php");
-    exit;
-}
+
+
 
 $id_usuario = $_SESSION['id'];
 

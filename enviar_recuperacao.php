@@ -18,7 +18,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 
-include 'conexao.php'; // aqui você precisa ter $conn = new mysqli(...);
+include 'conexao.php';
+include 'verifica_login.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];

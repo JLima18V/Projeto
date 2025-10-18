@@ -3,7 +3,7 @@
     session_start();
     include 'conexao.php';
     include 'generos.php';
-
+    include 'verifica_login.php';
     
     // Recuperar dados do usuário
     $sql = "SELECT email,instagram, whatsapp,  nome, sobrenome, nome_usuario, foto_perfil FROM usuarios WHERE id = ?";
