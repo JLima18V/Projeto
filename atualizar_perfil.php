@@ -14,7 +14,7 @@ include 'conexao.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST["id"];
     $nome_usuario = $_POST["nome_usuario"];
-    $nova_senha = $_POST["senha"];
+    // $nova_senha = $_POST["senha"];
     $instagram = $_POST['instagram'];
     $whatsapp = $_POST['whatsapp'];
 

@@ -1,8 +1,10 @@
 <?php
-include 'conexao.php';
-include 'generos.php'; // Adicionei esta linha para os gêneros
-
 session_start();
+include 'conexao.php';
+include 'generos.php'; 
+
+
+
 
 $id_logado = $_SESSION['id'] ?? null;
 
@@ -340,7 +342,15 @@ $stmt_livros->close();
             font-style: italic;
         }
 
-       
+        .status-disponivel {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-indisponivel {
+            color: #dc3545;
+            font-weight: bold;
+        }
     </style>
 
     <!-- jQuery (necessário pro Select2) -->
@@ -350,11 +360,17 @@ $stmt_livros->close();
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
-    <!-- Cabeçalho -->
+       <!-- Cabeçalho -->
     <header class="header">
+        <?php if (isset($_SESSION['admin_id'])): ?>
+        <a href="admin/homepage_admin.php">
+            <img src="imagens/logo-trocatrocajk.png" alt="Logo" class="logo">
+        </a>
+        <?php else: ?>
         <a href="homepage.php">
             <img src="imagens/logo-trocatrocajk.png" alt="Logo" class="logo">
         </a>
+        <?php endif;?>
         <div class="search-container">
             <!-- 🔍 FORMULÁRIO DE BUSCA (IGUAL AO PERFIL.PHP) -->
             <form id="searchForm" method="GET" action="" style="display: flex; align-items: center; width: 100%;">
@@ -366,16 +382,26 @@ $stmt_livros->close();
             </form>
             <img src="imagens/icone-filtro.svg" alt="Filtrar" class="filter-icon" onclick="toggleFilter()">
         </div>
+        
         <div class="icons">
-            <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()">
-            <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.php'">
-            <img src="imagens/icone-mensagem.svg" alt="Trocas Solicitadas" onclick="window.location.href='trocas_solicitadas.php'">
-            <div class="foto-perfil-container" onclick="window.location.href='perfil.php'">
-                <img src="<?= $foto_perfil_logado ? 'imagens/perfis/' . htmlspecialchars($foto_perfil_logado) : 'imagens/icone-perfil.svg' ?>" 
-                     alt="Perfil" 
-                     class="perfil-icon" 
-                     style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-            </div>
+            <?php if (isset($_SESSION['admin_id'])): ?>
+                <!-- Se for admin, mostra apenas o botão Painel Admin -->
+                <button onclick="window.location.href='admin/painel.php'" 
+                        style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                    Painel Admin
+                </button>
+            <?php else: ?>
+                <!-- Se for usuário normal, mostra as funcionalidades normais -->
+                <img src="imagens/icone-publicarlivro.svg" alt="Publicar livro" onclick="abrirPopup()">
+                <img src="imagens/icone-listadedesejo.svg" alt="Lista de desejos" onclick="window.location.href='listadedesejo.php'">
+                <img src="imagens/icone-mensagem.svg" alt="Trocas Solicitadas" onclick="window.location.href='trocas_solicitadas.php'">
+                <div class="foto-perfil-container" onclick="window.location.href='perfil.php'">
+                    <img src="<?= $foto_perfil_logado ? 'imagens/perfis/' . htmlspecialchars($foto_perfil_logado) : 'imagens/icone-perfil.svg' ?>" 
+                         alt="Perfil" 
+                         class="perfil-icon" 
+                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                </div>
+            <?php endif; ?>
         </div>
     </header>
 

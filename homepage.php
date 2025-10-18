@@ -2,20 +2,30 @@
 session_start();
 include 'conexao.php';
 include 'generos.php';
+include 'verifica_login.php';
+
 
 // 🔍 SISTEMA DE PESQUISA E FILTROS (IGUAL AO PERFIL.PHP)
 $busca = isset($_GET['busca']) ? trim($_GET['busca']) : '';
 $genero_filtro = isset($_GET['genero']) ? $_GET['genero'] : '';
 $estado_filtro = isset($_GET['estado']) ? $_GET['estado'] : '';
 $ordenar_por = isset($_GET['ordenar']) ? $_GET['ordenar'] : 'data_publicacao_desc';
+$mostrar_meus = isset($_GET['mostrar_meus']) ? true : false;
 
-// Construir query base para livros disponíveis
+// Construir query base para livros disponíveis     
 $sql = "SELECT l.*, u.nome_usuario, u.foto_perfil, u.id as id_dono 
         FROM livros l 
         LEFT JOIN usuarios u ON l.id_usuario = u.id 
         WHERE l.status = 'disponivel'";
 $params = array();
 $types = "";
+
+// 🔍 SE O USUÁRIO DESMARCAR A OPÇÃO, ESCONDE OS LIVROS DELE
+if (!$mostrar_meus && isset($_SESSION['id'])) {
+    $sql .= " AND l.id_usuario != ?";
+    $params[] = $_SESSION['id'];
+    $types .= "i";
+}
 
 // Aplicar filtros (MESMA LÓGICA DO PERFIL.PHP)
 if (!empty($busca)) {
@@ -268,6 +278,12 @@ if (isset($_SESSION['id'])) {
                 </div>
             </div>
             
+             <!-- ✅ NOVA CHECKBOX: MOSTRAR MEUS LIVROS -->
+        <div class="filter-checkbox">
+            <input type="checkbox" id="mostrar_meus" name="mostrar_meus" <?= $mostrar_meus ? 'checked' : '' ?>>
+            <label for="mostrar_meus">Mostrar meus livros</label>
+        </div>
+        
             <div class="filter-actions">
                 <button type="submit" class="btn-filter btn-apply">Aplicar Filtros</button>
                 <button type="button" class="btn-filter btn-clear" onclick="clearFilters()">Limpar Filtros</button>
@@ -308,7 +324,7 @@ if (isset($_SESSION['id'])) {
                     return 'uploads/' . $img; 
                 }, $imagens));
 
-                echo '<div class="card-livro" data-imagen=\'' . $imagensJson . '\'>';
+                echo '<div class="card-livro" data-imagens=\'' . $imagensJson . '\'>';
                 echo '<div class="card-header">';
                 echo '<div class="header-usuario">';
 
@@ -508,11 +524,18 @@ if (isset($_SESSION['id'])) {
         });
 
         // Adicionar evento de clique aos cards de livro existentes
-        document.querySelectorAll('.card-livro').forEach(card => {
-            card.addEventListener('click', function () {
-                mostrarDetalhesLivro(this);
-            });
-        });
+   // Debug para verificar se os cards estão sendo detectados
+document.addEventListener('click', function(e) {
+    console.log('Elemento clicado:', e.target);
+    console.log('Card encontrado:', e.target.closest('.card-livro'));
+    
+    const card = e.target.closest('.card-livro');
+    if (card) {
+        console.log('Card encontrado, abrindo modal...');
+        mostrarDetalhesLivro(card);
+    }
+});
+
 
         // Função para mostrar detalhes do livro
         function mostrarDetalhesLivro(cardElement) {
