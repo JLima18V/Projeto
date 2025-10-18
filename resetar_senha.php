@@ -1,5 +1,6 @@
 <?php
 include 'conexao.php';
+include 'verifica_login.php';
 
 $erro = "";
 $token_valido = false;

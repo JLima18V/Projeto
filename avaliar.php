@@ -2,6 +2,7 @@
 session_start();
 include 'conexao.php';
 
+
 if (!isset($_SESSION['id'])) {
     die("Acesso negado.");
 }

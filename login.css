@@ -520,3 +520,11 @@ body{
 .input-box .eye-btn img {
     transition: all 0.3s ease;
 }
+
+.msg-erro {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}

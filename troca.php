@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'conexao.php';
+include 'verifica_login.php';
 
 // ID do livro que o usuário deseja (passado por GET na URL, ex: trocar.php?id=5)
 $id_livro_solicitado = $_GET['id'];

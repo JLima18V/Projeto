@@ -1,6 +1,8 @@
 <?php
 session_start();
 include 'conexao.php';
+include 'verifica_login.php';
+
 
 if (!isset($_SESSION['id'])) {
     die("Acesso negado.");

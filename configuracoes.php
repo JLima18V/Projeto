@@ -1,12 +1,7 @@
 <?php
 session_start();
 include 'conexao.php';
-
-// Verificar se o usuário está logado
-if (!isset($_SESSION['id'])) {
-    header('Location: login.php');
-    exit;
-}
+include 'verifica_login.php';
 
 // Busca os dados completos do usuário
 $id = $_SESSION['id'];

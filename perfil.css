@@ -21,6 +21,15 @@ body {
     left: 0;
     z-index: 1000;
 }
+.status-disponivel {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-indisponivel {
+            color: #dc3545;
+            font-weight: bold;
+        }
 
 /* Container principal da página de perfil */
 .perfil-container {
@@ -308,16 +317,6 @@ body {
     transition: background-color 0.3s;
     color: white;
 }
-
- .status-disponivel {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .status-indisponivel {
-            color: #dc3545;
-            font-weight: bold;
-        }
 
 .btn-editar {
     background-color: #4CAF50;

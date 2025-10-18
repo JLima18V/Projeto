@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'conexao.php';
+include 'verifica_login.php';
 
 $id_usuario = $_SESSION['id'];
 

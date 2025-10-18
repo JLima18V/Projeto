@@ -2,6 +2,7 @@
 session_start();
 include 'conexao.php';
 
+
 $login_error = false;
 $cadastro_sucesso = false;
 $cadastro_erro = "";
@@ -11,6 +12,21 @@ if (isset($_SESSION['id'])) {
     header("Location: homepage.php");
     exit();
 }
+
+$mensagemErro = '';
+if (isset($_GET['erro'])) {
+    switch ($_GET['erro']) {
+        case 1:
+            $mensagemErro = "Você precisa fazer login para acessar essa página.";
+            break;
+        case 2:
+            $mensagemErro = "Usuário ou senha incorretos.";
+            break;
+        // Adicione outros erros aqui se quiser
+    }
+}
+
+
 
 // Exibe mensagens salvas na sessão e limpa
 if (isset($_SESSION['login_error'])) {
@@ -27,39 +43,72 @@ if (isset($_SESSION['cadastro_sucesso'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // LOGIN
     if (isset($_POST['login'])) {
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
         $senha = $_POST['senha'];
-        
-        $stmt = $conn->prepare("SELECT id, nome_usuario, senha_hash FROM usuarios WHERE email = ?");
-        
+
+        // --- 1) Verifica se é admin ---
+        $stmtAdmin = $conn->prepare("SELECT id, email, senha FROM admins WHERE email = ?");
+        if ($stmtAdmin) {
+            $stmtAdmin->bind_param("s", $email);
+            $stmtAdmin->execute();
+            $resAdmin = $stmtAdmin->get_result();
+
+            if ($rowAdmin = $resAdmin->fetch_assoc()) {
+                if (hash('sha256', $senha) === $rowAdmin['senha']) {
+                    // Sessão exclusiva do admin
+                    
+                    $_SESSION['admin_id'] = $rowAdmin['id'];
+                    $_SESSION['email'] = $rowAdmin['email'];
+                    $_SESSION['usuario'] = 'Administrador';
+                   
+
+
+                    header("Location: admin/homepage_admin.php"); // vai pra homepage especial
+                    exit();
+                } 
+            }
+            $stmtAdmin->close();
+        }
+
+        // --- 2) Se não for admin, tenta login como usuário normal ---
+        $stmt = $conn->prepare("SELECT id, nome_usuario, senha_hash, status, tipo FROM usuarios WHERE email = ?");
         if ($stmt) {
             $stmt->bind_param("s", $email);
             $stmt->execute();
-            $result = $stmt->get_result();
-            
-            if ($row = $result->fetch_assoc()) {
-                if (password_verify($senha, $row['senha_hash'])) {
+            $res = $stmt->get_result();
+
+            if ($row = $res->fetch_assoc()) {
+                if ($row['status'] === 'banido') {
+                    $login_error = "Seu acesso foi bloqueado pelo administrador.";
+                } elseif (password_verify($senha, $row['senha_hash'])) {
+                    // Login usuário normal
                     $_SESSION['id'] = $row['id'];
                     $_SESSION['usuario'] = $row['nome_usuario'];
                     $_SESSION['email'] = $email;
-                    
+                    $_SESSION['tipo'] = $row['tipo'] ?? 'usuario';
+
                     if (isset($_POST['lembrar'])) {
                         setcookie('lembrar_email', $email, time() + (86400 * 30), "/");
                     } else {
                         setcookie('lembrar_email', '', time() - 3600, "/");
                     }
-                    
-                    header("Location: homepage.php");
+
+                    header("Location: homepage.php"); // homepage normal
                     exit();
+                } else {
+                    $login_error = "E-mail ou senha incorretos.";
                 }
+            } else {
+                $login_error = "E-mail ou senha incorretos.";
             }
-            
-            $login_error = true;
             $stmt->close();
         }
     }
+    
+}
+
+
 
     // CADASTRO
     if (isset($_POST['cadastro'])) {
@@ -94,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $cadastro_erro = "Erro na preparação do cadastro: " . $conn->error;
         }
     }
-}
+
 
 // Lê o cookie se existir
 $saved_email = isset($_COOKIE['lembrar_email']) ? $_COOKIE['lembrar_email'] : "";
@@ -108,10 +157,15 @@ $saved_email = isset($_COOKIE['lembrar_email']) ? $_COOKIE['lembrar_email'] : ""
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
+    <?php if ($mensagemErro): ?>
+    <div class="msg-erro"><?= htmlspecialchars($mensagemErro) ?></div>
+<?php endif; ?>
+
     <div class="wrapper">
         <!-- Formulário de Login -->
         <form id="loginForm" method="POST" action="Login.php" style="<?= isset($_POST['cadastro']) ? 'display:none;' : '' ?>">
             <h1>Login</h1>
+            
             <?php if ($login_error): ?>
             <div class="login-error-message">
                 Email ou senha incorretos.

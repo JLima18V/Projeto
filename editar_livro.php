@@ -2,11 +2,6 @@
 session_start();
 include 'conexao.php';
 
-if (!isset($_SESSION['id'])) {
-    header("Location: login.php");
-    exit();
-}
-
 $id_usuario = $_SESSION['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
