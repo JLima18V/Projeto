@@ -9,9 +9,11 @@ CREATE TABLE usuarios (
     sobrenome varchar (50) not null,
     nome_usuario VARCHAR(50) NOT NULL,
     senha_hash VARCHAR(255) NOT NULL,
+	status ENUM('ativo','banido') DEFAULT 'ativo',
+    tipo ENUM('admin','usuario') default 'usuario',
     foto_perfil VARCHAR(255) DEFAULT NULL,
     instagram varchar(100) default null,
-    whatsapp varchar(14) default null,
+    whatsapp varchar(16) default null,
     token varchar(100) default null,
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -87,3 +89,11 @@ CREATE TABLE avaliacoes_imagens (
     FOREIGN KEY (id_avaliacao) REFERENCES avaliacoes(id) ON DELETE CASCADE
 );
 
+CREATE TABLE admins (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(100) NOT NULL,
+  senha VARCHAR(255) NOT NULL
+);
+
+-- INSERT INTO admins (email, senha) VALUES ('admin@gmail.com', SHA2('12121212', 256));--
+--Muda pro email e a senha que ces quiserem--
