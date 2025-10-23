@@ -620,7 +620,15 @@ $idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_de
         <?php endif; ?>
 
         <div>
-            <?php while ($livro = $result_livros->fetch_assoc()): ?>
+             <?php 
+            $livrosDisponiveisEncontrados = false;
+            while ($livro = $result_livros->fetch_assoc()): 
+                // No modo troca, mostra apenas livros disponíveis
+                if ($modoTroca && $livro['status'] !== 'disponivel') {
+                    continue;
+                }
+                $livrosDisponiveisEncontrados = true;
+            ?>
                 <div class="livro-item">
                     <?php
                         $imagens = explode(',', $livro['imagens']);
@@ -673,10 +681,16 @@ $idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_de
                     </div>
                 </div>
             <?php endwhile; ?>
+    <?php if ($modoTroca && !$livrosDisponiveisEncontrados): ?>
+                <p>Nenhum livro disponível encontrado para oferecer em troca.</p>
+                <p>Você só pode oferecer livros com status "disponível".</p>
+            <?php endif; ?>
         </div>
 
-        <?php if ($modoTroca): ?>
+        <?php if ($modoTroca && $livrosDisponiveisEncontrados): ?>
             <button type="submit" class="postar" style="margin-top:15px;">Enviar Solicitação de Troca</button>
+            </form>
+                 <?php elseif ($modoTroca): ?>
             </form>
         <?php endif; ?>
     <?php else: ?>
