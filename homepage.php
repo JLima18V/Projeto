@@ -4,6 +4,22 @@ include 'conexao.php';
 include 'generos.php';
 include 'verifica_login.php';
 
+// VERIFICA SE USUÁRIO ESTÁ BANIDO
+if (isset($_SESSION['id'])) {
+    $stmt = $conn->prepare("SELECT status FROM usuarios WHERE id = ?");
+    $stmt->bind_param("i", $_SESSION['id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($row = $result->fetch_assoc()) {
+        if ($row['status'] === 'banido') {
+            session_destroy();
+            header("Location: Login.php?erro=3");
+            exit();
+        }
+    }
+    $stmt->close();
+}
 
 // 🔍 SISTEMA DE PESQUISA E FILTROS (IGUAL AO PERFIL.PHP)
 $busca = isset($_GET['busca']) ? trim($_GET['busca']) : '';
@@ -123,92 +139,123 @@ if (isset($_SESSION['id'])) {
     <link rel="icon" href="imagens/favicon.ico" type="image/x-icon">
     
     <!-- 🔍 ESTILOS DOS FILTROS (IGUAL AO PERFIL.PHP) -->
-    <style>
-        .filter-container {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #dee2e6;
-        }
-        
-        .filter-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 10px;
-            align-items: end;
-        }
-        
-        .filter-group {
-            flex: 1;
-            min-width: 150px;
-        }
-        
-        .filter-group label {
-            display: block;
-            margin-bottom: 45px;
-            font-weight: bold;
-            color: #495057;
-            font-size: 14px;
-        }
-        
-        .filter-group select,
-        .filter-group input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        
-        .filter-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .btn-filter {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
-        
-        .btn-apply {
-            background: #007bff;
-            color: white;
-        }
-        
-        .btn-apply:hover {
-            background: #0056b3;
-        }
-        
-        .btn-clear {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .btn-clear:hover {
-            background: #545b62;
-        }
-        
-        .search-results-info {
-            margin-bottom: 15px;
-            color: #6c757d;
-            font-style: italic;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 4px;
-        }
+<style>
+/* Ajuste no container dos filtros */
+/* Ajuste no container dos filtros */
+.filter-container {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: -80px;
+    border: 1px solid #dee2e6;
+}
 
-        .livros-count {
-            margin: 10px 0;
-            color: #495057;
-            font-weight: bold;
-        }
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: end;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 45px;
+    font-weight: bold;
+    color: #495057;
+    font-size: 14px;
+}
+
+.filter-group select,
+.filter-group input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* FORÇAR O SELECT2 A OCUPAR 100% DA LARGURA */
+.filter-group .select2-container {
+    width: 100% !important;
+    display: block !important;
+}
+
+.filter-group .select2-container .select2-selection--single {
+    height: 34px !important;
+    padding: 6px 10px !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.filter-group .select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 20px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.filter-group .select2-container .select2-selection--single .select2-selection__arrow {
+    height: 32px !important;
+    top: 1px !important;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.btn-filter {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn-apply {
+    background: #007bff;
+    color: white;
+}
+
+.btn-apply:hover {
+    background: #0056b3;
+}
+
+.btn-clear {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-clear:hover {
+    background: #545b62;
+}
+
+.search-results-info {
+    margin-bottom: 1px;
+    margin-top: 0px;
+    color: #6c757d;
+    font-style: italic;
+    padding: 1px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.livros-count {
+    margin: 0px 0 15px 0
+    color: #495057;
+    font-weight: bold;
+}
+    
     </style>
 </head>
 <body>
@@ -245,7 +292,7 @@ if (isset($_SESSION['id'])) {
             <div class="filter-row">
                 <div class="filter-group">
                     <label for="genero">Gênero</label>
-                    <select id="genero" name="genero">
+                    <select id="genero" name="genero" style="width:100%;">
                         <option value="">Todos os gêneros</option>
                         <?php foreach ($generos as $genero): ?>
                             <option value="<?= htmlspecialchars($genero) ?>" <?= $genero_filtro === $genero ? 'selected' : '' ?>>
@@ -595,7 +642,8 @@ document.addEventListener('click', function(e) {
         document.addEventListener('DOMContentLoaded', () => {
             // Inicializar Select2 para os filtros
             $('#genero').select2({
-                placeholder: "Selecione um gênero",
+                width: 'resolve',
+                placeholder: "Todos os gêneros",
                 allowClear: true
             });
 
@@ -718,6 +766,33 @@ document.addEventListener('click', function(e) {
             // Se tudo estiver ok, permite o envio do formulário
             return true;
         }
+
+        // Verifica a cada 10 segundos se o usuário foi banido
+function verificarSeFoiBanido() {
+    fetch('verificar_sessao.php')
+        .then(response => response.text())
+        .then(status => {
+            if (status === 'banido') {
+                window.location.href = 'Login.php';
+            }
+        })
+        .catch(error => {
+            console.log('Erro na verificação:', error);
+        });
+}
+
+// Verifica a cada 10 segundos
+setInterval(verificarSeFoiBanido, 10000);
+
+// Verifica também quando o usuário volta para a aba
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) { // Quando a página fica visível novamente
+        verificarSeFoiBanido();
+    }
+});
+
+// Verifica quando a página carrega
+verificarSeFoiBanido();
     </script>
 </body>
 </html>

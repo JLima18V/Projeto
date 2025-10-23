@@ -843,10 +843,7 @@ $idLivroDesejado = isset($_GET['id_livro_desejado']) ? intval($_GET['id_livro_de
             function fecharPopup() {
                 document.getElementById("popupOverlay").style.display = "none";
             }
-        </script>   
-
-        <script>
-// Adiciona interatividade aos itens de seleção de livro
+            // Adiciona interatividade aos itens de seleção de livro
 document.addEventListener('DOMContentLoaded', function() {
     const livroItems = document.querySelectorAll('.livro-item');
     
@@ -876,7 +873,35 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-</script>
+ // Verifica a cada 10 segundos se o usuário foi banido
+function verificarSeFoiBanido() {
+    fetch('verificar_sessao.php')
+        .then(response => response.text())
+        .then(status => {
+            if (status === 'banido') {
+                window.location.href = 'Login.php';
+            }
+        })
+        .catch(error => {
+            console.log('Erro na verificação:', error);
+        });
+}
+
+// Verifica a cada 10 segundos
+setInterval(verificarSeFoiBanido, 10000);
+
+// Verifica também quando o usuário volta para a aba
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) { // Quando a página fica visível novamente
+        verificarSeFoiBanido();
+    }
+});
+
+// Verifica quando a página carrega
+verificarSeFoiBanido();
+        </script>   
+
+    
 
 <?php if(isset($_SESSION['mensagem'])): ?>
     <div class="mensagem-sucesso">
@@ -917,4 +942,3 @@ function toggleSidebar() {
 </script>
     </body>
     </html>
-

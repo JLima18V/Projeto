@@ -46,11 +46,9 @@ $stmt->bind_param("iii", $id_usuario, $id_receptor, $id_livro_solicitado);
 
 
 if ($stmt->execute()) {
-    
+    $id_troca = $conn->insert_id;
 
-    $id_troca = $conn->insert_id; // pega o ID da troca recém-criada
-
-    // 3️⃣ Inserir os livros oferecidos na tabela 'trocas_livros_oferecidos' de forma otimizada
+    // 3️⃣ Inserir os livros oferecidos
     if (!empty($livros_oferecidos)) {
         $values = [];
         $types = "";
@@ -66,17 +64,21 @@ if ($stmt->execute()) {
         $sql_oferecidos = "INSERT INTO trocas_livros_oferecidos (id_troca, id_livro_oferecido) 
                            VALUES " . implode(", ", $values);
         $stmt_oferecido = $conn->prepare($sql_oferecidos);
-        include 'enviar_email_interesse.php';
         
-        
-        // Usando call_user_func_array para bind_param dinâmico
         $stmt_oferecido->bind_param($types, ...$params);
         $stmt_oferecido->execute();
         $stmt_oferecido->close();
     }
-        include 'enviar_email_interesse.php';
 
-    // After trade is processed successfully
+    // ✅ ENVIAR EMAIL - CHAMANDO A FUNÇÃO
+    include 'enviar_email_interesse.php';
+    $emailEnviado = enviarEmailInteresse($conn, $id_livro_solicitado, $id_usuario);
+
+    // Opcional: você pode verificar se o email foi enviado
+    if (!$emailEnviado) {
+        error_log("Aviso: Email não pôde ser enviado, mas a troca foi registrada");
+    }
+
     $_SESSION['mensagem'] = "Troca solicitada com sucesso!";
     header('Location: perfil.php');
     exit;
