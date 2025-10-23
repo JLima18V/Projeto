@@ -1,4 +1,3 @@
-
 <?php
     session_start();
     include 'conexao.php';
@@ -127,62 +126,86 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
     $result_livros = $stmt_livros->get_result();
     $stmt_livros->close();
 
-    // Verifica se o formulário foi enviado para atualizar a foto
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_POST['remover_foto'])) {
-            // Remove a foto de perfil
-            if (!empty($usuario['foto_perfil'])) {
-                $caminho_foto = 'imagens/perfis/' . $usuario['foto_perfil'];
-                if (file_exists($caminho_foto)) {
-                    unlink($caminho_foto);
-                }
-                
-                // Atualiza o banco de dados
-                $sql = "UPDATE usuarios SET foto_perfil = NULL WHERE id = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $_SESSION['id']);
-                $stmt->execute();
-                $stmt->close();
-                
-                $usuario['foto_perfil'] = null;
-                $_SESSION['foto_perfil'] = null;
-            }
-        } elseif (isset($_FILES['foto_perfil'])) {
-            $foto = $_FILES['foto_perfil'];
+    // ----- Início: tratamento de edição de livro -----
+    if (isset($_POST['editar_livro'])) {
+        $id_livro = intval($_POST['id_livro_edit'] ?? 0);
+        $titulo = trim($_POST['titulo_edit'] ?? '');
+        $autor  = trim($_POST['autor_edit'] ?? '');
+        $genero = trim($_POST['genero_edit'] ?? '');
+        $estado = trim($_POST['estado_edit'] ?? '');
 
-            // Verifica se o arquivo foi enviado com sucesso
-            if ($foto['error'] == 0) {
-                // Remove a foto antiga se existir
-                if (!empty($usuario['foto_perfil'])) {
-                    $caminho_antigo = 'imagens/perfis/' . $usuario['foto_perfil'];
-                    if (file_exists($caminho_antigo)) {
-                        unlink($caminho_antigo);
+        // Verifica propriedade do livro
+        $sql_check = "SELECT imagens FROM livros WHERE id = ? AND id_usuario = ?";
+        $stmt_check = $conn->prepare($sql_check);
+        $stmt_check->bind_param("ii", $id_livro, $_SESSION['id']);
+        $stmt_check->execute();
+        $result_check = $stmt_check->get_result();
+
+        if ($result_check && $result_check->num_rows > 0) {
+            $row = $result_check->fetch_assoc();
+            $imagens_antigas = $row['imagens'] ?? '';
+
+            // Atualiza campos básicos
+            $sql_update = "UPDATE livros SET titulo = ?, autor = ?, genero = ?, estado = ? WHERE id = ? AND id_usuario = ?";
+            $stmt_update = $conn->prepare($sql_update);
+            $stmt_update->bind_param("ssssii", $titulo, $autor, $genero, $estado, $id_livro, $_SESSION['id']);
+            $stmt_update->execute();
+            $stmt_update->close();
+
+            // Processa novas imagens: se houver upload, substitui as antigas
+            $novas_imagens = [];
+            if (!empty($_FILES['imagens_edit']) && isset($_FILES['imagens_edit']['name']) && count($_FILES['imagens_edit']['name']) > 0) {
+                // Verifica se ao menos um arquivo foi enviado (não UPLOAD_ERR_NO_FILE) 
+                $temArquivo = false;
+                foreach($_FILES['imagens_edit']['error'] as $error) {
+                    if ($error !== UPLOAD_ERR_NO_FILE) {
+                        $temArquivo = true;
+                        break;
                     }
                 }
 
-                $extensao = pathinfo($foto['name'], PATHINFO_EXTENSION);
-                $novo_nome = 'perfil_' . $_SESSION['id'] . '.' . $extensao;
-                $diretorio = 'imagens/perfis/';
+                if ($temArquivo) {
+                    $upload_dir = 'uploads/';
+                    if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+                    $novas_imagens = [];
 
-                // Verifica se a pasta existe, caso contrário, cria
-                if (!is_dir($diretorio)) {
-                    mkdir($diretorio, 0777, true);
-                }
-
-                // Move o arquivo para o diretório de perfil
-                if (move_uploaded_file($foto['tmp_name'], $diretorio . $novo_nome)) {
-                    // Atualiza o caminho da foto no banco de dados
-                    $sql = "UPDATE usuarios SET foto_perfil = ? WHERE id = ?";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("si", $novo_nome, $_SESSION['id']);
-                    $stmt->execute();
-                    $stmt->close();
-                    $usuario['foto_perfil'] = $novo_nome; // Atualiza a foto no array de dados
-                    $_SESSION['foto_perfil'] = $novo_nome;
-                } else {
-                    echo "<script>alert('Erro ao enviar a foto!');</script>";
+                    for ($i = 0; $i < count($_FILES['imagens_edit']['name']); $i++) {
+                        if ($_FILES['imagens_edit']['error'][$i] === UPLOAD_ERR_OK) {
+                            $tmp = $_FILES['imagens_edit']['tmp_name'][$i];
+                            $orig = basename($_FILES['imagens_edit']['name'][$i]);
+                            $ext = pathinfo($orig, PATHINFO_EXTENSION);
+                            $novo_nome = 'livro_' . $id_livro . '_' . time() . '_' . mt_rand(1000,9999) . '.' . $ext;
+                            
+                            if (move_uploaded_file($tmp, $upload_dir . $novo_nome)) {
+                                $novas_imagens[] = $novo_nome;
+                            }
+                        }
+                    }
                 }
             }
+
+            if (!empty($novas_imagens)) {
+                // Substitui completamente as imagens antigas pelas novas
+                $imagens_final = implode(',', $novas_imagens);
+                $sql_up_imgs = "UPDATE livros SET imagens = ? WHERE id = ? AND id_usuario = ?";
+                $stmt_up_imgs = $conn->prepare($sql_up_imgs);
+                $stmt_up_imgs->bind_param("sii", $imagens_final, $id_livro, $_SESSION['id']);
+                $stmt_up_imgs->execute();
+                $stmt_up_imgs->close();
+
+                // (Opcional) remover arquivos antigos do servidor
+                if (!empty($imagens_antigas)) {
+                    $antigas = array_filter(array_map('trim', explode(',', $imagens_antigas)));
+                    foreach ($antigas as $a) {
+                        $path = 'uploads/' . $a;
+                        if (file_exists($path)) @unlink($path);
+                    }
+                }
+            }
+
+            $_SESSION['mensagem'] = "Livro atualizado com sucesso.";
+        } else {
+            $_SESSION['mensagem'] = "Livro não encontrado ou sem permissão.";
         }
     }
     ?>
@@ -198,27 +221,29 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
         
         <title>Perfil</title>
         <style>
+        /* Ajuste no container dos filtros - alinhado com homepage */
         .filter-container {
             background: #f8f9fa;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: -80px; /* igual à homepage para sobrepor levemente */
             border: 1px solid #dee2e6;
+            z-index: 900;
         }
-        
+
         .filter-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 8px;
+            margin-bottom: 8px;
             align-items: end;
         }
-        
+
         .filter-group {
             flex: 1;
             min-width: 150px;
         }
-        
+
         .filter-group label {
             display: block;
             margin-bottom: 45px;
@@ -226,53 +251,92 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
             color: #495057;
             font-size: 14px;
         }
-        
+
         .filter-group select,
         .filter-group input {
             width: 100%;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border: 1px solid #ced4da;
             border-radius: 4px;
             font-size: 14px;
+            box-sizing: border-box;
         }
-        
+
+        /* FORÇAR O SELECT2 A OCUPAR 100% DA LARGURA */
+        .filter-group .select2-container {
+            width: 100% !important;
+            display: block !important;
+        }
+
+        .filter-group .select2-container .select2-selection--single {
+            height: 34px !important;
+            padding: 6px 10px !important;
+            border: 1px solid #ced4da !important;
+            border-radius: 4px !important;
+            font-size: 14px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        .filter-group .select2-container .select2-selection--single .select2-selection__rendered {
+            line-height: 20px !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .filter-group .select2-container .select2-selection--single .select2-selection__arrow {
+            height: 32px !important;
+            top: 1px !important;
+        }
+
         .filter-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
         }
-        
+
         .btn-filter {
-            padding: 8px 16px;
+            padding: 6px 12px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
             transition: background-color 0.3s;
         }
-        
+
         .btn-apply {
             background: #007bff;
             color: white;
         }
-        
+
         .btn-apply:hover {
             background: #0056b3;
         }
-        
+
         .btn-clear {
             background: #6c757d;
             color: white;
         }
-        
+
         .btn-clear:hover {
             background: #545b62;
         }
-        
+
         .search-results-info {
-            margin-bottom: 15px;
+            margin-bottom: 1px;
+            margin-top: 0px;
             color: #6c757d;
             font-style: italic;
+            padding: 1px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .livros-count {
+            margin: 0 0 15px 0;
+            color: #495057;
+            font-weight: bold;
         }
         </style>
 
@@ -413,38 +477,42 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
             <div class="popup">
                 <div class="popup-header">
                     <span class="fechar" onclick="fecharPopupEdicao()">
-                        <img src="imagens/icone-voltar.png" alt="Fechar" class="fechar-imagem" />
+                        <img src="imagens/icone-voltar.png" alt="Fechar" class="fechar-imagem">
                     </span>
                     <h2>Editar Livro</h2>
                 </div>
 
-                <form id="formEditarLivro" action="editar_livro.php" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="id_livro" id="id_livro_edit" />
-                    
+                <form id="formEditarLivro" method="POST" enctype="multipart/form-data" onsubmit="return validarFormulario()">
+                    <input type="hidden" name="editar_livro" value="1">
+                    <input type="hidden" id="id_livro_edit" name="id_livro_edit" value="">
+
                     <div class="upload-area" onclick="document.getElementById('fileInputEditar').click()">
-                        <p>Clique para adicionar/alterar imagens</p>
-                        <input type="file" id="fileInputEditar" name="imagens[]" multiple accept="image/*" style="display: none;" />
+                        <p id="uploadTextEditar">Clique para adicionar imagens do livro</p>
+                        <input type="file" id="fileInputEditar" name="imagens_edit[]" multiple accept="image/*" style="display: none;">
                     </div>
                     <div id="previewContainerEditar" class="preview-container"></div>
 
                     <div class="input-container">
-                        <input type="text" name="titulo" id="titulo_edit" placeholder="Título" required />
+                        <input type="text" id="titulo_edit" name="titulo_edit" placeholder="Título" required>
                     </div>
+                    
                     <div class="input-container">
-                        <input type="text" name="autor" id="autor_edit" placeholder="Autor" required />
+                        <input type="text" id="autor_edit" name="autor_edit" placeholder="Autor" required>
                     </div>
+
                     <div class="input-container">
-                        <select id="genero_edit" name="genero" required style="width:100%;">
+                        <select id="genero_edit" name="genero_edit" required style="width:100%;">
                             <option value="">Selecione um gênero</option>
-                            <?php foreach ($generos as $genero): ?>
-                                <option value="<?= htmlspecialchars($genero) ?>">
-                                    <?= htmlspecialchars($genero) ?>
+                            <?php foreach ($generos as $g): ?>
+                                <option value="<?= htmlspecialchars($g) ?>">
+                                    <?= htmlspecialchars($g) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
+
                     <div class="input-container">
-                        <select name="estado" id="estado_edit" required>
+                        <select id="estado_edit" name="estado_edit" required>
                             <option value="">Estado</option>
                             <option value="Novo">Novo</option>
                             <option value="Seminovo">Seminovo</option>
@@ -503,19 +571,18 @@ $novo_status = (isset($_POST['status']) && $_POST['status'] === 'disponivel') ? 
                     </p>
                     <div class="perfil-social-links">
                         <?php if (!empty($usuario['instagram'])): ?>
-                            <a href="https://instagram.com/<?= htmlspecialchars($usuario['instagram']) ?>" target="_blank" class="social-link">
-                                <img src="imagens/icone-instagram.svg" alt="Instagram" style="width: 24px; vertical-align: middle;">
+                            <a href="https://instagram.com/<?= htmlspecialchars($usuario['instagram']) ?>" target="_blank" rel="noopener noreferrer" class="social-link instagram">
+                                <img src="imagens/icone-instagram.svg" alt="Instagram">
                                 <span>@<?= htmlspecialchars($usuario['instagram']) ?></span>
-                            </a> </p>
+                            </a>
                         <?php endif; ?>
 
                         <?php if (!empty($usuario['whatsapp'])): ?>
-                            <p>  <a href="https://wa.me/<?= preg_replace('/\D/', '', $usuario['whatsapp']) ?>" target="_blank" class="social-link">
-                                <img src="imagens/icone-whatsapp.svg" alt="WhatsApp" style="width: 24px; vertical-align: middle;">
+                            <a href="https://wa.me/<?= preg_replace('/\D/', '', $usuario['whatsapp']) ?>" target="_blank" rel="noopener noreferrer" class="social-link whatsapp">
+                                <img src="imagens/icone-whatsapp.svg" alt="WhatsApp">
                                 <span><?= htmlspecialchars($usuario['whatsapp']) ?></span>
-                            </a> </p>
+                            </a>
                         <?php endif; ?>
-                        
                     </div>
                 </div>
             </div>
